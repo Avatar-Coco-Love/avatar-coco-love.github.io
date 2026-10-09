@@ -9,3 +9,9 @@ Home page with links to all my projects: https://avatar-coco-love.github.io/
 
 Projects: [Emergent Arcade](https://avatar-coco-love.github.io/emergent-arcade/),
 [Animal Mail Route](https://avatar-coco-love.github.io/animal-mail-route/).
+
+`email-list/Code.gs`: the Apps Script behind the "Get updates" form. It lives
+in the Google Sheet "Email list (projects page)" (Extensions > Apps Script) and
+is deployed as a web app (Execute as: Me, Who has access: Anyone). A copy is
+kept here so it isn't lost; editing this file does nothing until it's pasted
+into Apps Script and redeployed.
