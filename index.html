@@ -44,6 +44,13 @@
   .card p { margin: 0 0 10px; color: var(--muted); }
   .go { color: var(--accent); font-weight: 600; }
   footer { margin-top: 28px; text-align: center; font-size: .85rem; color: var(--muted); }
+  footer p { margin: 0 0 10px; }
+  .call {
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    min-height: 48px; padding: 0 20px; border: 1px solid var(--border); border-radius: 999px;
+    background: var(--panel); color: var(--accent); font-size: 1rem; font-weight: 600; text-decoration: none;
+  }
+  .call:hover { border-color: var(--accent); }
 </style>
 </head>
 <body>
@@ -68,7 +75,10 @@
       </div>
     </li>
   </ul>
-  <footer>Made by Cody Joshua Clements</footer>
+  <footer>
+    <p>Made by Cody Joshua Clements</p>
+    <a class="call" href="tel:+12694160175" aria-label="Call or text Cody: 269-416-0175">📞 269-416-0175</a>
+  </footer>
 </main>
 </body>
 </html>
