@@ -17,11 +17,11 @@
 <style>
   :root {
     --bg: #f4f4f7; --panel: #fff; --text: #16161d; --muted: #5d5d6b;
-    --border: #d9d9e2; --accent: #006fa6; color-scheme: light;
+    --border: #d9d9e2; --accent: #006fa6; --on-accent: #fff; --field: #7c7c8a; --bad: #b3261e; color-scheme: light;
   }
   @media (prefers-color-scheme: dark) {
     :root { --bg: #0b0b10; --panel: #16161d; --text: #e8e8ee; --muted: #9a9aa5;
-      --border: #2a2a34; --accent: #6fd3ff; color-scheme: dark; }
+      --border: #2a2a34; --accent: #6fd3ff; --on-accent: #0b0b10; --field: #737380; --bad: #ff9a8a; color-scheme: dark; }
   }
   * { box-sizing: border-box; }
   body {
@@ -57,6 +57,25 @@
     background: var(--panel); color: var(--accent); font-size: 1rem; font-weight: 600; text-decoration: none;
   }
   .call:hover { border-color: var(--accent); }
+  .signup { margin-top: 28px; padding: 18px 16px; background: var(--panel); border: 1px solid var(--border); border-radius: 14px; }
+  .signup h2 { margin: 0 0 4px; }
+  .signup > p { margin: 0 0 14px; color: var(--muted); font-size: .95rem; }
+  .signup label { display: block; margin: 0 0 4px; font-size: .9rem; font-weight: 600; }
+  .signup input {
+    display: block; width: 100%; min-height: 48px; margin: 0 0 12px; padding: 0 12px;
+    font: inherit; font-size: 16px; color: var(--text); background: var(--bg);
+    border: 1px solid var(--field); border-radius: 10px;
+  }
+  .signup input:focus-visible { outline: 3px solid var(--accent); outline-offset: 1px; }
+  .signup button {
+    width: 100%; min-height: 48px; border: 0; border-radius: 10px; cursor: pointer;
+    font: inherit; font-weight: 700; background: var(--accent); color: var(--on-accent);
+  }
+  .signup button:disabled { opacity: .6; cursor: wait; }
+  .signup button:focus-visible { outline: 3px solid var(--text); outline-offset: 2px; }
+  .hp { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+  #su-status { margin: 10px 0 0; min-height: 1.5em; font-weight: 600; }
+  #su-status.bad { color: var(--bad); }
 </style>
 </head>
 <body>
@@ -81,10 +100,53 @@
       </div>
     </li>
   </ul>
+  <section class="signup" aria-labelledby="su-h">
+    <h2 id="su-h">Get updates</h2>
+    <p>New games and big changes, a few times a year at most. Unsubscribe anytime. Parents and teachers: sign up with your own email.</p>
+    <form id="signup">
+      <label for="su-email">Email</label>
+      <input id="su-email" name="email" type="email" autocomplete="email" inputmode="email" required>
+      <label for="su-name">Name (optional)</label>
+      <input id="su-name" name="name" autocomplete="given-name" maxlength="80">
+      <div class="hp" aria-hidden="true"><label>Leave this empty <input name="website" tabindex="-1" autocomplete="off"></label></div>
+      <button type="submit">Join</button>
+      <p id="su-status" role="status"></p>
+    </form>
+  </section>
   <footer>
     <p>Made by Cody Joshua Clements</p>
     <a class="call" href="tel:+12694160175" aria-label="Call or text Cody: 269-416-0175">📞 269-416-0175</a>
   </footer>
 </main>
+<script>
+// "Get updates": posts to the Apps Script in email-list/Code.gs, which adds a
+// row to the "Email list (projects page)" Google Sheet.
+(function () {
+  var URL = 'https://script.google.com/macros/s/AKfycbyIagZezzEcDx8uYNIF34KR5AX4fGkvWWphxs6PAKhWc5wUygsA-freoog9rA1PgOKqZg/exec';
+  var form = document.getElementById('signup'), status = document.getElementById('su-status');
+  var button = form.querySelector('button');
+  function show(text, bad) { status.textContent = text; status.className = bad ? 'bad' : ''; }
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    if (!form.reportValidity()) return;
+    var data = new URLSearchParams(new FormData(form));
+    data.set('source', 'projects page');
+    button.disabled = true;
+    show('Joining…');
+    fetch(URL, { method: 'POST', body: data })
+      .then(function (r) { return r.json(); })
+      .then(function (res) {
+        if (res.ok) {
+          form.reset();
+          show(res.already ? "You're already on the list. Thanks!" : "Thanks, you're on the list!");
+        } else {
+          show("That email doesn't look right. Check it and try again.", true);
+        }
+      })
+      .catch(function () { show("Couldn't reach the list just now. Please try again in a minute.", true); })
+      .then(function () { button.disabled = false; });
+  });
+})();
+</script>
 </body>
 </html>
