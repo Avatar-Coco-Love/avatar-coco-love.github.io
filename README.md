@@ -8,7 +8,8 @@ Home page with links to all my projects: https://avatar-coco-love.github.io/
   project is just a new card in `index.html`.
 
 Projects: [Emergent Arcade](https://avatar-coco-love.github.io/emergent-arcade/),
-[Animal Mail Route](https://avatar-coco-love.github.io/animal-mail-route/).
+[Animal Mail Route](https://avatar-coco-love.github.io/animal-mail-route/),
+[Foldwork](https://avatar-coco-love.github.io/foldwork/).
 
 `email-list/Code.gs`: the Apps Script behind the "Get updates" form. It lives
 in the Google Sheet "Email list (projects page)" (Extensions > Apps Script) and
