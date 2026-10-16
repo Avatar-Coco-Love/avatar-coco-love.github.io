@@ -39,9 +39,12 @@
     border: 1px solid var(--border); border-radius: 14px;
     transition: border-color .15s, transform .15s;
   }
-  .card:hover, .card:has(a:focus-visible) { border-color: var(--accent); }
+  /* No hover border: phones keep :hover on the last card tapped. Keyboard focus still shows. */
+  .card:has(a:focus-visible) { border-color: var(--accent); }
   .card:has(a:active) { transform: scale(.99); }
   .card img { display: block; width: 100%; aspect-ratio: 1200 / 630; object-fit: cover; background: var(--border); }
+  /* The arcade's share image ends in a light-blue stripe; crop it off here. */
+  .card img.crop-stripe { aspect-ratio: 1200 / 612; object-position: top; }
   .body { padding: 14px 16px 16px; }
   h2 { margin: 0 0 4px; font-size: 1.2rem; }
   h2 a { color: inherit; text-decoration: none; }
@@ -84,7 +87,7 @@
   <p class="intro">Free games that play in your browser. No installs, no ads.</p>
   <ul>
     <li class="card">
-      <img src="https://avatar-coco-love.github.io/emergent-arcade/assets/og/arcade.png" alt="">
+      <img class="crop-stripe" src="https://avatar-coco-love.github.io/emergent-arcade/assets/og/arcade.png" alt="">
       <div class="body">
         <h2><a href="https://avatar-coco-love.github.io/emergent-arcade/">Emergent Arcade</a></h2>
         <p>Tiny games, two or three moves each, all tangled in the same state. Achievements, a Daily Challenge and leaderboards.</p>
