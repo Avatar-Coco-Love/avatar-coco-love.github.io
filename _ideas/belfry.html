@@ -1,0 +1,690 @@
+<title>Belfry</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IM+Fell+English+SC&family=IM+Fell+English:ital@0;1&family=Alegreya+Sans:ital,wght@0,400;0,500;0,700;1,400&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<style>
+/* Layout: one reading column (about 66ch) on limewashed stone; the live demo and figures run wider. Treble red and working-bell blue are the two blue-line colours ringers use; gilt is for peal boards only. */
+:root {
+  --bg: #eceeea;
+  --surface: #f8f9f6;
+  --fg: #1c222b;
+  --muted: #5a6270;
+  --line: #d2d6cf;
+  --blue: #1d52c0;
+  --treble: #bf2f28;
+  --gilt: #9a6f12;
+  --chip: #e1e4dd;
+  --board: #17241f;
+  --board-fg: #e7cf8a;
+  --board-muted: #b8a56f;
+  --display: "IM Fell English SC", "IM Fell English", Georgia, "Times New Roman", serif;
+  --fell: "IM Fell English", Georgia, "Times New Roman", serif;
+  --body: "Alegreya Sans", "Gill Sans", "Segoe UI", system-ui, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #12161c; --surface: #1a2028; --fg: #e5e8ec; --muted: #9aa3b2; --line: #2c3542;
+    --blue: #7ea6ff; --treble: #ff7f72; --gilt: #e2bb5c; --chip: #222a35;
+    --board: #0d1612; --board-fg: #e9cf86; --board-muted: #b39f68; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #12161c; --surface: #1a2028; --fg: #e5e8ec; --muted: #9aa3b2; --line: #2c3542;
+  --blue: #7ea6ff; --treble: #ff7f72; --gilt: #e2bb5c; --chip: #222a35;
+  --board: #0d1612; --board-fg: #e9cf86; --board-muted: #b39f68; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--fg);
+  font-family: var(--body); font-size: 18px; line-height: 1.6;
+}
+.wrap {
+  max-width: 1080px; margin: 0 auto;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 36px 80px;
+  display: grid; gap: 64px;
+}
+section { display: grid; gap: 18px; min-width: 0; }
+.col { max-width: 66ch; display: grid; gap: 14px; min-width: 0; }
+h1, h2, h3 { margin: 0; text-wrap: balance; line-height: 1.08; font-weight: 400; }
+h1 { font-family: var(--display); font-size: clamp(56px, 11vw, 112px); letter-spacing: 0.01em; }
+h2 { font-family: var(--display); font-size: clamp(30px, 4.6vw, 42px); }
+h3 { font-family: var(--fell); font-size: 23px; }
+p, ul, ol { margin: 0; }
+ul, ol { padding-left: 1.2em; display: grid; gap: 6px; }
+a { color: var(--blue); text-underline-offset: 3px; }
+.eyebrow { font-family: var(--mono); font-size: 13px; font-weight: 600; letter-spacing: 0.09em; text-transform: uppercase; color: var(--gilt); }
+.lede { font-family: var(--fell); font-size: clamp(22px, 2.6vw, 27px); line-height: 1.4; max-width: 34ch; }
+.muted { color: var(--muted); }
+.row { font-family: var(--mono); font-weight: 600; font-variant-numeric: tabular-nums; letter-spacing: 0.06em; white-space: nowrap; }
+.r { color: var(--treble); } .b { color: var(--blue); }
+.facts { display: flex; flex-wrap: wrap; gap: 8px; list-style: none; padding: 0; }
+.facts li { background: var(--chip); border-radius: 999px; padding: 3px 12px; font-size: 15px; }
+.facts b { font-weight: 700; }
+
+/* hero */
+.hero { display: grid; gap: 28px; grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr); align-items: start; }
+@media (max-width: 860px) { .hero { grid-template-columns: minmax(0, 1fr); } }
+.hero-text { display: grid; gap: 18px; min-width: 0; }
+
+/* demo */
+.demo { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 18px; display: grid; gap: 14px; min-width: 0; }
+.demo-head { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+.demo-head h3 { font-size: 21px; }
+.bells { display: flex; align-items: center; justify-content: center; gap: 0; flex-wrap: nowrap; padding: 6px 0; }
+.bell {
+  width: clamp(44px, 13vw, 58px); height: 64px; border-radius: 10px 10px 18px 18px; border: 2px solid var(--fg);
+  background: var(--bg); color: var(--fg); font-family: var(--mono); font-weight: 600; font-size: 26px;
+  display: grid; place-items: center; cursor: pointer; position: relative;
+}
+.bell.t { border-color: var(--treble); color: var(--treble); }
+.bell.w { border-color: var(--blue); color: var(--blue); box-shadow: inset 0 -5px 0 var(--blue); }
+.bell.t.w { box-shadow: inset 0 -5px 0 var(--treble); }
+.bell.strike { animation: strike 260ms ease-out; }
+@keyframes strike { 0% { transform: translateY(-5px); } 100% { transform: none; } }
+.gap {
+  width: clamp(30px, 9vw, 40px); height: 44px; border: 0; background: none; cursor: pointer; display: grid; place-items: center;
+  color: var(--muted); font-family: var(--mono); font-size: 22px; border-radius: 8px;
+}
+.gap::before { content: "|"; opacity: 0.45; }
+.gap[aria-pressed="true"] { color: var(--fg); background: var(--chip); }
+.gap[aria-pressed="true"]::before { content: "×"; opacity: 1; font-size: 28px; }
+.gap:disabled { cursor: default; }
+button:focus-visible, .bell:focus-visible { outline: 3px solid var(--gilt); outline-offset: 2px; }
+.controls { display: flex; flex-wrap: wrap; gap: 8px; }
+.btn {
+  font: 600 16px/1 var(--body); padding: 11px 15px; min-height: 44px; border-radius: 9px; cursor: pointer;
+  border: 1px solid var(--line); background: var(--bg); color: var(--fg);
+}
+.btn.primary { background: var(--fg); color: var(--bg); border-color: var(--fg); }
+.btn:disabled { opacity: 0.45; cursor: default; }
+.status { font-size: 16px; min-height: 2.6em; }
+.status b { font-weight: 700; }
+.status .bad { color: var(--treble); font-weight: 700; }
+.lines { max-height: 300px; overflow-y: auto; border-top: 1px solid var(--line); padding-top: 10px; }
+.lines canvas { display: block; margin: 0 auto; }
+.hint { font-size: 15px; color: var(--muted); }
+
+/* tables */
+.tbl { overflow-x: auto; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); }
+table { border-collapse: collapse; width: 100%; font-size: 16px; }
+th, td { text-align: left; vertical-align: top; padding: 9px 12px; border-bottom: 1px solid var(--line); }
+tr:last-child td { border-bottom: 0; }
+th { font-family: var(--mono); font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+td:first-child { font-weight: 700; white-space: nowrap; }
+td.num, th.num { font-variant-numeric: tabular-nums; text-align: right; white-space: nowrap; }
+
+/* three modes */
+.modes { display: grid; gap: 16px; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+@media (max-width: 860px) { .modes { grid-template-columns: minmax(0, 1fr); } }
+.mode { border-top: 3px solid var(--fg); padding-top: 12px; display: grid; gap: 8px; align-content: start; min-width: 0; }
+.mode .eyebrow { color: var(--muted); }
+
+/* two column */
+.two { display: grid; gap: 28px; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: start; }
+@media (max-width: 860px) { .two { grid-template-columns: minmax(0, 1fr); } }
+.two > * { min-width: 0; }
+
+/* figure */
+figure { margin: 0; display: grid; gap: 8px; min-width: 0; }
+figcaption { font-size: 15px; color: var(--muted); max-width: 60ch; }
+.fig { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 14px; overflow-x: auto; }
+.fig canvas { display: block; margin: 0 auto; }
+
+/* peal board */
+.board {
+  background: var(--board); color: var(--board-fg); border-radius: 6px; padding: 22px 20px;
+  box-shadow: inset 0 0 0 6px color-mix(in srgb, var(--board-fg) 22%, transparent), inset 0 0 0 8px var(--board);
+  text-align: center; display: grid; gap: 6px; font-family: var(--fell);
+}
+.board .k { font-family: var(--display); font-size: 15px; letter-spacing: 0.14em; color: var(--board-muted); }
+.board .big { font-family: var(--display); font-size: clamp(26px, 4vw, 34px); line-height: 1.1; }
+.board .it { font-style: italic; color: var(--board-muted); font-size: 17px; }
+.board .band { font-size: 16px; line-height: 1.5; }
+
+/* daily card */
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 16px; display: grid; gap: 10px; max-width: 360px; }
+.card .top { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; font-family: var(--mono); font-size: 14px; }
+.card .score { font-family: var(--display); font-size: 30px; line-height: 1; }
+.pips { font-family: var(--mono); font-size: 18px; letter-spacing: 0.12em; line-height: 1.3; word-break: break-all; }
+
+/* timeline */
+.steps { list-style: none; padding: 0; display: grid; gap: 0; }
+.steps li { display: grid; grid-template-columns: 74px minmax(0, 1fr); gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--line); }
+.steps li:last-child { border-bottom: 0; }
+.steps .t { font-family: var(--mono); font-weight: 600; color: var(--gilt); font-variant-numeric: tabular-nums; }
+
+/* plan */
+.plan { counter-reset: pr; list-style: none; padding: 0; display: grid; gap: 0; }
+.plan li { counter-increment: pr; display: grid; grid-template-columns: 44px minmax(0, 1fr); gap: 10px; padding: 11px 0; border-bottom: 1px solid var(--line); }
+.plan li::before { content: counter(pr); font-family: var(--display); font-size: 28px; line-height: 1; color: var(--gilt); }
+.plan li.proto { background: color-mix(in srgb, var(--blue) 9%, transparent); border-radius: 8px; padding-inline: 8px; margin-inline: -8px; }
+.checks { list-style: none; padding: 0; }
+.checks li { display: flex; gap: 10px; }
+.checks li::before { content: "☐"; color: var(--muted); }
+
+.src { font-size: 15px; color: var(--muted); }
+.src ul { gap: 2px; }
+@media (prefers-reduced-motion: reduce) { .bell.strike { animation: none; } }
+</style>
+
+<div class="wrap">
+
+<section class="hero" aria-labelledby="t">
+  <div class="hero-text">
+    <p class="eyebrow">Idea 23 · concept and build plan · 17 Oct 2026</p>
+    <h1 id="t">Belfry</h1>
+    <p class="lede">A puzzle game you can hear. Ring a set of church bells through every order they can make, one swap at a time, and bring them home without ever repeating a row.</p>
+    <ul class="facts">
+      <li><b>Genre</b> sound and logic puzzle</li>
+      <li><b>Audience</b> puzzle fans, maths and music classrooms, bell ringers</li>
+      <li><b>Session</b> 5–20 min</li>
+      <li><b>Size</b> M (about a quarter of Foldwork)</li>
+      <li><b>Spreads by</b> Daily Touch card, links that play a composition</li>
+    </ul>
+    <p>The rules come from <em>change ringing</em>, an English tradition written down in 1668. Ringers still practise it in thousands of towers. I found practice simulators for ringers but no game built on these rules, and a 400-year-old tradition belongs to no one, so there is nothing to copy by accident.</p>
+  </div>
+
+  <div class="demo" aria-labelledby="demo-h">
+    <div class="demo-head">
+      <h3 id="demo-h">Try the core rule</h3>
+      <span class="hint">4 bells · 24 possible rows</span>
+    </div>
+    <div class="bells" id="bells" aria-label="Current row"></div>
+    <div class="controls">
+      <button class="btn primary" id="ring" type="button">Ring the change</button>
+      <button class="btn" id="sound" type="button" aria-pressed="false">Sound: off</button>
+      <button class="btn" id="auto-hunt" type="button">Ring plain hunt</button>
+      <button class="btn" id="auto-bob" type="button">Ring Plain Bob Minimus</button>
+      <button class="btn" id="reset" type="button">Start again</button>
+    </div>
+    <p class="status" id="status" aria-live="polite"></p>
+    <div class="lines"><canvas id="lines" aria-label="Rows rung so far, with the treble's path in red and the chosen bell's path in blue"></canvas></div>
+    <p class="hint">Tap a gap between two bells to cross them, then ring. A bell moves one place at most, so two gaps side by side can't both cross. Tap a bell to draw its path in blue. Keys: <span class="row">1</span>–<span class="row">3</span> toggle gaps, <span class="row">Enter</span> rings.</p>
+  </div>
+</section>
+
+<section aria-labelledby="idea">
+  <div class="col">
+    <h2 id="idea">The idea in full</h2>
+    <p>In a church tower each bell hangs on a wheel with one ringer below it. They ring in order, lightest to heaviest: <span class="row">1234</span>, called <em>rounds</em>. The lightest bell is the <em>treble</em> and the heaviest is the <em>tenor</em>. A bell that heavy can't be hurried or held back by more than one beat, so between one row and the next a bell can only swap with a neighbour. Ringers call each new row a <em>change</em>.</p>
+    <p>That gives three rules, and the whole game grows from them:</p>
+    <ol>
+      <li><b>Every row, every bell rings once.</b></li>
+      <li><b>Between rows, a bell moves one place at most.</b></li>
+      <li><b>No row twice, and finish on rounds.</b> A composition that repeats a row is <em>false</em>. One that rings every possible row once is an <em>extent</em>.</li>
+    </ol>
+    <p>Four bells make 24 rows, five make 120, six make 720 and eight make 40,320. Finding a path through them is a real search problem. Ringers have studied it since the 1600s, so the depth is already proven, and mathematicians teach it as a picture of permutation groups. The game adds goals, limits and a score to that search. The sound gives feedback a grid puzzle can't: a false row is one you have already heard.</p>
+  </div>
+  <div class="tbl">
+    <table>
+      <thead><tr><th>Ringer's term</th><th>What it means</th><th>Where it shows up in Belfry</th></tr></thead>
+      <tbody>
+        <tr><td>Rounds</td><td>All bells in order, <span class="row">1234</span></td><td>Start and finish of every puzzle</td></tr>
+        <tr><td>Change</td><td>One new row</td><td>One move</td></tr>
+        <tr><td>Making a place</td><td>A bell stays where it is</td><td>Leaving a gap uncrossed</td></tr>
+        <tr><td>Hunting</td><td>A bell moving steadily up or down</td><td>The first pattern taught; an auto-fill button</td></tr>
+        <tr><td>Dodge</td><td>Two bells swap, then swap straight back</td><td>A common move that is easy to waste</td></tr>
+        <tr><td>False</td><td>A row came twice</td><td>Fails a puzzle; the row is marked and replayed</td></tr>
+        <tr><td>Touch</td><td>A short composition</td><td>The Daily Touch</td></tr>
+        <tr><td>Extent / peal</td><td>Every row once / 5,000+ changes</td><td>Long goals that earn peal boards</td></tr>
+        <tr><td>Bob, single</td><td>A conductor's call that changes the next lead</td><td>Conduct mode</td></tr>
+        <tr><td>Blue line</td><td>A drawn path of one bell through the rows</td><td>The picture on every solution and share card</td></tr>
+        <tr><td>Handstroke, backstroke</td><td>Rows go in pairs, with a short pause before each pair</td><td>The beat in Ring mode</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section aria-labelledby="modes">
+  <div class="col">
+    <h2 id="modes">Three ways to play</h2>
+    <p>Each mode uses the same rows and the same rules, so a player can go from planning a composition to ringing it to leading the band through it.</p>
+  </div>
+  <div class="modes">
+    <div class="mode">
+      <p class="eyebrow">Main mode</p>
+      <h3>Compose</h3>
+      <p>The puzzle. You see the current row and cross pairs of bells to make the next one, as in the demo above. Each tower sets a goal: reach a target row in exactly 7 changes, ring 18 different rows and come home, or avoid the cracked rows. Undo is free. After every change you hear the row, and you can play back the whole touch at any time.</p>
+    </div>
+    <div class="mode">
+      <p class="eyebrow">Unlocks in tower 4</p>
+      <h3>Ring</h3>
+      <p>Rhythm. Your finished composition plays, the band rings their bells, and you ring one bell yourself with a tap or a key. You have to know where your bell is in each row, which is what a real ringer learns. You're judged on <em>striking</em>, the evenness of the beat, the way ringing competitions are judged. There's a no-timing option for anyone who wants it.</p>
+    </div>
+    <div class="mode">
+      <p class="eyebrow">Unlocks in tower 5</p>
+      <h3>Conduct</h3>
+      <p>Live calls. The band rings a known pattern (Plain Bob) by itself. At each lead end you can call <em>Bob</em>, <em>Single</em> or nothing, and that changes what comes next. Your goal is to bring the band back to rounds without a false row. This is how real conductors work, and it's the deepest mode: the same three choices over and over, planned several leads ahead.</p>
+    </div>
+  </div>
+</section>
+
+<section aria-labelledby="figure-h">
+  <div class="two">
+    <figure>
+      <div class="fig"><canvas id="pbm" aria-label="Blue line of Plain Bob Minimus: 24 rows on four bells, with the treble's path drawn in red and bell 2's path in blue, zig-zagging across the four places and returning to rounds."></canvas></div>
+      <figcaption>Plain Bob Minimus, drawn by this page from its place notation <span class="row">x14x14x14x12</span>, rung three times. All 24 rows come once and it comes back to rounds, so it's a true extent. Every solution in Belfry draws a picture like this.</figcaption>
+    </figure>
+    <div class="col">
+      <h2 id="figure-h">The picture is the solution</h2>
+      <p>Ringers learn a pattern by drawing one bell's path through the rows. They usually draw it in blue with the treble in red, and they call it the <em>blue line</em>. In Belfry the line draws itself as you play. Every finished puzzle leaves a picture of how you solved it.</p>
+      <p>That gives the game three useful things:</p>
+      <ul>
+        <li><b>A share image</b> for the Daily card and the end of a tower.</li>
+        <li><b>A visual way in</b> for players who can't hear, or have the sound off. The whole game works from the lines alone.</li>
+        <li><b>A clue for wasted moves.</b> A dodge looks like a little spike. A smooth line usually means a smooth solution.</li>
+      </ul>
+      <p>A composition also fits in a few characters. Ringers write each change as the places that don't move (<span class="row">x</span> means every pair crosses), so a whole touch is a short string like <span class="row">x14x14x14x12</span>. A link carrying that string opens the game and plays the touch. Nothing is stored on a server.</p>
+    </div>
+  </div>
+</section>
+
+<section aria-labelledby="rules-h">
+  <div class="col">
+    <h2 id="rules-h">Tower rules</h2>
+    <p>Each tower adds limits to the three rules. They're shown on the screen as plain icons and words, never by colour alone. Each one teaches one idea, then later towers combine them.</p>
+  </div>
+  <div class="tbl">
+    <table>
+      <thead><tr><th>Rule</th><th>What it does</th><th>What it teaches</th></tr></thead>
+      <tbody>
+        <tr><td>Target row</td><td>Reach this row in exactly N changes</td><td>Counting moves; parity (some targets can't be reached in an odd number)</td></tr>
+        <tr><td>Cracked row</td><td>This row may never be rung</td><td>Routing around a hole in the search</td></tr>
+        <tr><td>Tired ringer</td><td>This bell can't move two changes running</td><td>Planning a bell's rests</td></tr>
+        <tr><td>Stubborn bell</td><td>This bell never leaves its place</td><td>Working with fewer moving parts (a tenor "behind")</td></tr>
+        <tr><td>Treble leads</td><td>The treble must be first at these points</td><td>Structure, the idea behind leads and lead ends</td></tr>
+        <tr><td>Music</td><td>Named rows score extra: back rounds <span class="row">654321</span>, Queens <span class="row">135246</span>, Tittums <span class="row">142536</span>, runs like <span class="row">…3456</span></td><td>That some rows sound better, which ringers care about</td></tr>
+        <tr><td>Muffled bell</td><td>In Ring mode, one bell rings silently</td><td>Keeping time from the pattern, not the sound</td></tr>
+        <tr><td>Short practice</td><td>Only so many changes before the band tires</td><td>Efficient routes; the quickest way home</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section aria-labelledby="towers-h">
+  <div class="col">
+    <h2 id="towers-h">Towers: the progression</h2>
+    <p>Eight towers, each a set of 8–12 puzzles, plus the Daily. Bigger towers mean more bells and more rows. The names are generic on purpose, so no real church or ringing society is shown.</p>
+  </div>
+  <div class="tbl">
+    <table>
+      <thead><tr><th>Tower</th><th class="num">Bells</th><th class="num">Rows</th><th>New idea</th><th>Ends with</th></tr></thead>
+      <tbody>
+        <tr><td>1 · Handbell table</td><td class="num">3</td><td class="num">6</td><td>Crossing, rounds, no repeats</td><td>Ring all 6 rows</td></tr>
+        <tr><td>2 · Village tower</td><td class="num">4</td><td class="num">24</td><td>Hunting, false rows, target rows</td><td>Plain hunt, then a 24-row extent</td></tr>
+        <tr><td>3 · Old tower</td><td class="num">4</td><td class="num">24</td><td>Cracked rows, tired ringers</td><td>An extent with 3 cracked rows</td></tr>
+        <tr><td>4 · Market town</td><td class="num">5</td><td class="num">120</td><td>Ring mode, handstroke gap</td><td>Ring your own 40-change touch</td></tr>
+        <tr><td>5 · Practice night</td><td class="num">5</td><td class="num">120</td><td>Conduct mode: bobs and singles</td><td>Call a 120-row extent of Plain Bob Doubles</td></tr>
+        <tr><td>6 · Abbey</td><td class="num">6</td><td class="num">720</td><td>Music, stubborn tenor</td><td>A touch with Queens and Tittums in it</td></tr>
+        <tr><td>7 · Harvest festival</td><td class="num">6</td><td class="num">720</td><td>All rules mixed</td><td>A quarter peal (1,260+ changes), composed and called</td></tr>
+        <tr><td>8 · Cathedral</td><td class="num">8</td><td class="num">40,320</td><td>Long methods as building blocks</td><td>A peal of 5,040 changes, played back at speed</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="muted" style="max-width:66ch">Tower 8 isn't rung by hand. You compose it from blocks (whole leads of a method plus your calls), then listen to it rung at full speed, about three hours squeezed into a few minutes.</p>
+</section>
+
+<section aria-labelledby="score-h">
+  <div class="two">
+    <div class="col">
+      <h2 id="score-h">Scoring and peal boards</h2>
+      <p>Each puzzle gives up to three bells:</p>
+      <ul>
+        <li><b>True:</b> no repeated row, finished on rounds, every tower rule kept.</li>
+        <li><b>Goal:</b> the tower's target met (a length, a row, a time).</li>
+        <li><b>Craft:</b> the puzzle's extra challenge, which is either more music or fewer changes than the reference solution.</li>
+      </ul>
+      <p>Long achievements earn a <em>peal board</em>. Real towers record great rings on painted boards with gold lettering. In Belfry they hang on the wall of your ringing chamber, the game's home screen. That's the collection that keeps a player coming back past ten minutes: each board is a record of something hard you did.</p>
+    </div>
+    <div class="board" role="img" aria-label="Example peal board in gold lettering on a dark green board">
+      <p class="k">ON SATURDAY · 17 OCTOBER 2026</p>
+      <p class="it">was rung in this tower</p>
+      <p class="big">An Extent of<br>Plain Bob Doubles</p>
+      <p class="row" style="color:var(--board-fg)">120 CHANGES</p>
+      <p class="band">Treble · Ada &nbsp; 2 · Bram &nbsp; 3 · Cleo<br>4 · Dov &nbsp; Tenor · You</p>
+      <p class="it">Conducted by You · 2 false rows avoided at the 3rd lead</p>
+    </div>
+  </div>
+</section>
+
+<section aria-labelledby="daily-h">
+  <div class="two">
+    <div class="col">
+      <h2 id="daily-h">The Daily Touch</h2>
+      <p>One puzzle a day, the same for everyone, made from a seed by the generator described below and proven solvable before it ships. Monday starts on 4 bells; the week gets longer and harder until Sunday, which is on 6.</p>
+      <p>The result card doesn't give the answer away. It shows the length, the bells earned and a row of pips, one per change: <span class="row">·</span> for a quiet change, <span class="row">♪</span> for a music row. The full blue line picture unlocks for sharing the next day, once that puzzle has closed.</p>
+      <p>The Daily is the main way new players arrive, so it's in the first playable build, not the last.</p>
+    </div>
+    <div class="card" role="img" aria-label="Example Daily Touch result card: Thursday, 5 bells, 18 changes, all three bells earned, 4 music rows.">
+      <div class="top"><span>BELFRY · DAILY TOUCH</span><span>THU 22 OCT</span></div>
+      <div class="score">18 changes</div>
+      <div class="row">5 bells · <span class="r">true</span> · goal · craft</div>
+      <div class="pips" aria-hidden="true">··♪···♪·· ···♪··♪···</div>
+      <div class="muted" style="font-size:14px">4 music rows · 2 better than par</div>
+    </div>
+  </div>
+</section>
+
+<section aria-labelledby="session-h">
+  <div class="col">
+    <h2 id="session-h">A first session</h2>
+    <p>Someone opens a shared Daily link on their phone with no idea what change ringing is.</p>
+  </div>
+  <ol class="steps">
+    <li><span class="t">0:00</span><span>Three bells ring rounds. One line of text: <em>"Swap two neighbours. Don't ring the same order twice."</em> They tap a gap; the bells cross and ring the new order.</span></li>
+    <li><span class="t">0:40</span><span>They've rung all 6 rows of three bells. The blue line draws itself, and a peal board appears for the first "extent". It's tiny, but it's theirs.</span></li>
+    <li><span class="t">2:00</span><span>Four bells. A target row in 5 changes. Their first try comes in a change short; parity becomes something they feel, not something they read.</span></li>
+    <li><span class="t">5:00</span><span>First false row. The two matching rows flash and play one after the other, so they hear why it failed.</span></li>
+    <li><span class="t">9:00</span><span>They finish the Daily Touch with two bells out of three, then go back to find the shorter route for the third.</span></li>
+    <li><span class="t">14:00</span><span>They tap "Ring plain hunt" on the help card, hear an 8-row pattern ring itself, and realise it solves half of tower 2. That's the hook for the next session.</span></li>
+  </ol>
+</section>
+
+<section aria-labelledby="made-h">
+  <div class="two">
+    <div class="col">
+      <h2 id="made-h">How puzzles are made and checked</h2>
+      <p>Rows are small numbers, so the whole game state is tiny and fully checkable. On 4 to 6 bells a plain depth-first search finds every route quickly; on 8 bells puzzles are built from known method blocks instead.</p>
+      <ul>
+        <li><b>Solver:</b> proves every handmade puzzle and every Daily has a solution, and finds the shortest one (the Craft target).</li>
+        <li><b>Generator:</b> picks a tower's rules from the seed, then keeps only puzzles the solver can solve and the novice bot can't solve by luck.</li>
+        <li><b>Bots:</b> a novice (random legal crosses, avoids rows it has rung), a hunter (only uses plain hunt), and an expert (the solver). One line per bot per tower, the same style as the arcade's balance scripts.</li>
+        <li><b>CI:</b> replays every reference solution after every change, as Foldwork does with its floor proofs.</li>
+      </ul>
+    </div>
+    <div class="col">
+      <h2>Tech, phones and access</h2>
+      <ul>
+        <li><b>Sound:</b> every bell is synthesized with Web Audio from the five partials of a tuned bell (hum, prime, tierce, quint, nominal), so there are no audio files. The demo above uses the same method. Strikes are scheduled on the audio clock, so timing holds on slow phones.</li>
+        <li><b>Drawing:</b> Canvas 2D for the bells and lines; the system font stack in the game itself.</li>
+        <li><b>Input:</b> tap or click a gap, or number keys on PC. Every target is 44px or larger.</li>
+        <li><b>Seeded:</b> every Daily and every generated puzzle comes from a seed.</li>
+        <li><b>Hearing:</b> every strike also flashes, and Compose is fully playable with sound off.</li>
+        <li><b>Colour:</b> bells carry numbers, so lines and bells never rely on red and blue alone.</li>
+        <li><b>Ring mode timing:</b> a calibration tap test for Bluetooth headphone lag, adjustable timing windows, and a no-timing option.</li>
+        <li><b>Offline and private:</b> saves stay on the device; play data only if the player opts in.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section aria-labelledby="where-h">
+  <div class="col">
+    <h2 id="where-h">Arcade game or standalone?</h2>
+    <p>Recommendation: <b>build Belfry as a standalone game, like Foldwork</b>, and list it on the projects page.</p>
+    <ul>
+      <li><b>Links that play a composition</b> and the Daily card work best when the link opens the game itself, not a cabinet inside the gallery's sandboxed frame.</li>
+      <li><b>Three modes, eight towers and a home screen of peal boards</b> are bigger than one self-contained arcade file.</li>
+      <li><b>The arcade roadmap</b> favours depth on its 20 games while player counts are low, so a new arcade game would go against it.</li>
+    </ul>
+    <p>The arcade could still get a taste later: a single-tower cabinet (4 bells, Compose only, a score, three achievements) that links to the full game. That's optional and not part of this plan.</p>
+  </div>
+</section>
+
+<section aria-labelledby="plan-h">
+  <div class="col">
+    <h2 id="plan-h">A first build plan</h2>
+    <p>One PR each. A phone-playable prototype is 4 PRs away (highlighted). The full game is about 11 PRs.</p>
+  </div>
+  <ol class="plan">
+    <li><div><b>Scaffolding.</b> Repository <span class="row">belfry</span>, page, test runner, CI, offline shell, <span class="row">CLAUDE.md</span> and docs written from this page. Reuse Foldwork's seeded random generator, storage wrapper and changelog pattern.</div></li>
+    <li><div><b>Rows core.</b> Rows, changes, place notation, truth checking, music detection, the solver. Pure logic, no page access, unit tested.</div></li>
+    <li><div><b>Bell sound.</b> Synthesized bells for 3–8 bells, a strike scheduler with the handstroke gap, a mute switch. A test page to listen to each bell.</div></li>
+    <li class="proto"><div><b>Compose screen.</b> Bells, gaps, undo, row list, blue line, towers 1–2. <b>Playable prototype: try it on a phone here.</b></div></li>
+    <li><div><b>Puzzle engine.</b> Tower rules, three bells per puzzle, reference solutions replayed in CI, tower 3, and the balance script with its bots.</div></li>
+    <li><div><b>Daily Touch.</b> Seeded generator with solver proof, the result card, links that play a composition.</div></li>
+    <li><div><b>Ring mode.</b> Striking judge, calibration, timing options; tower 4.</div></li>
+    <li><div><b>Conduct mode.</b> Plain Bob, bobs and singles, lead ends; tower 5.</div></li>
+    <li><div><b>Ringing chamber.</b> Home screen and peal boards.</div></li>
+    <li><div><b>Towers 6–8.</b> Music, 6 and 8 bells, composing from method blocks, fast playback.</div></li>
+    <li><div><b>Finish.</b> Settings, reduced motion, privacy page, share image, projects page card.</div></li>
+  </ol>
+</section>
+
+<section aria-labelledby="risk-h">
+  <div class="two">
+    <div class="col">
+      <h2 id="risk-h">Risks</h2>
+      <ul>
+        <li><b>An obscure theme.</b> "Church bells" can sound dusty. The pitch leads with the puzzle and the sound; the history is flavour, never homework.</li>
+        <li><b>Small boards early on.</b> Four bells only have 24 rows, so towers 2–3 could run out of surprises. Tower rules and the Craft goal carry them; playtests decide if 5 bells should come sooner.</li>
+        <li><b>Timing on phones.</b> Ring mode depends on low input lag. Audio-clock scheduling and calibration should cover it; test on a real phone right after PR 7.</li>
+        <li><b>Getting the tradition right.</b> Ringers will notice wrong terms. Ask a real ringer to read the glossary and Conduct mode before launch.</li>
+        <li><b>The name.</b> "Belfry" is a common word and other projects may use it. Check before the repository is made.</li>
+      </ul>
+    </div>
+    <div class="col">
+      <h2>Open questions for you</h2>
+      <ul class="checks">
+        <li>Is Belfry the right name, and should the repository be <span class="row">belfry</span>?</li>
+        <li>Look: a ringing chamber (limewashed walls, striped rope grips called sallies, peal boards), or something more abstract built from the lines?</li>
+        <li>Should the Daily ship in the prototype (PR 4) instead of PR 6, since it's the main way in?</li>
+        <li>Is it worth contacting the ringing community (local towers, ringing societies) for playtesters and a terms check?</li>
+        <li>Same opt-in play data as Foldwork, or none at first?</li>
+        <li>Should the optional one-tower arcade cabinet go on the list for later?</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section class="src" aria-labelledby="src-h">
+  <h3 id="src-h">Background and sources</h3>
+  <ul>
+    <li><a href="https://en.wikipedia.org/wiki/Change_ringing">Change ringing</a>, <a href="https://en.wikipedia.org/wiki/Method_ringing">Method ringing</a> and <a href="https://en.wikipedia.org/wiki/Plain_hunt">Plain hunt</a> (Wikipedia)</li>
+    <li><a href="https://scilogs.spektrum.de/hlf/maths-that-rings-a-bell/">Maths That Rings a Bell</a> (Heidelberg Laureate Forum blog)</li>
+    <li>Existing tools are ringer simulators, not games: <a href="https://www.cs.ubc.ca/~kvdoel/bells/bells.html">The Bells Applet</a> (UBC), <a href="https://magazine.raspberrypi.com/articles/electronic-bell-ringing-simulator">a Raspberry Pi bell simulator</a></li>
+  </ul>
+</section>
+
+</div>
+
+<script>
+(() => {
+  const N = 4;
+  const css = getComputedStyle(document.documentElement);
+  const tok = (n) => css.getPropertyValue(n).trim();
+  const rounds = () => Array.from({ length: N }, (_, i) => i + 1);
+
+  // § change rules: gaps[i] true = bells in places i and i+1 cross
+  function applyPn(row, pn) {
+    const r = row.slice(), keep = pn === 'x' ? [] : pn.split('').map((c) => +c - 1);
+    for (let i = 0; i < r.length - 1; ) {
+      if (keep.includes(i) || keep.includes(i + 1)) { i++; continue; }
+      [r[i], r[i + 1]] = [r[i + 1], r[i]]; i += 2;
+    }
+    return r;
+  }
+  function applyGaps(row, gaps) {
+    const r = row.slice();
+    gaps.forEach((on, i) => { if (on) [r[i], r[i + 1]] = [r[i + 1], r[i]]; });
+    return r;
+  }
+
+  // § sound: five partials of a tuned bell, relative to the nominal
+  const PARTIALS = [[0.25, 0.30, 3.2], [0.5, 0.42, 2.4], [0.6, 0.30, 1.7], [0.75, 0.16, 1.2], [1, 0.50, 1.4], [1.5, 0.10, 0.6]];
+  const NOMINALS = [880, 825, 733.3, 660]; // descending major scale, treble first
+  let ac = null, soundOn = false;
+  function strike(bell, when) {
+    if (!soundOn || !ac) return;
+    const f = NOMINALS[bell - 1], out = ac.createGain();
+    out.gain.value = 0.16; out.connect(ac.destination);
+    for (const [ratio, amp, decay] of PARTIALS) {
+      const o = ac.createOscillator(), g = ac.createGain();
+      o.frequency.value = f * ratio;
+      g.gain.setValueAtTime(0.0001, when);
+      g.gain.exponentialRampToValueAtTime(amp, when + 0.006);
+      g.gain.exponentialRampToValueAtTime(0.0001, when + decay);
+      o.connect(g); g.connect(out); o.start(when); o.stop(when + decay + 0.05);
+    }
+  }
+  const BEAT = 0.2;
+  function playRow(row, delay = 0) {
+    const t0 = ac ? ac.currentTime + 0.03 + delay : 0;
+    row.forEach((b, i) => {
+      strike(b, t0 + i * BEAT);
+      setTimeout(() => {
+        const el = bellsEl.querySelector(`[data-bell="${b}"]`);
+        if (el) { el.classList.remove('strike'); void el.offsetWidth; el.classList.add('strike'); }
+      }, (delay + i * BEAT) * 1000);
+    });
+  }
+
+  // § state
+  let rows, gaps, follow = 2, autoTimer = null;
+  const bellsEl = document.getElementById('bells'), statusEl = document.getElementById('status');
+  const canvas = document.getElementById('lines'), linesBox = canvas.parentElement;
+
+  function reset() {
+    stopAuto();
+    rows = [rounds()]; gaps = Array(N - 1).fill(false);
+    render();
+  }
+  function current() { return rows[rows.length - 1]; }
+  const key = (r) => r.join('');
+
+  function render() {
+    const row = current();
+    bellsEl.innerHTML = '';
+    row.forEach((b, i) => {
+      const el = document.createElement('button');
+      el.type = 'button'; el.className = 'bell' + (b === 1 ? ' t' : '') + (b === follow ? ' w' : '');
+      el.dataset.bell = b; el.textContent = b;
+      el.setAttribute('aria-label', `Bell ${b}${b === 1 ? ', the treble' : ''} in place ${i + 1}${b === follow ? ', path shown in blue' : ''}`);
+      el.addEventListener('click', () => { follow = b; render(); });
+      bellsEl.appendChild(el);
+      if (i < N - 1) {
+        const g = document.createElement('button');
+        g.type = 'button'; g.className = 'gap';
+        g.setAttribute('aria-pressed', String(gaps[i]));
+        g.setAttribute('aria-label', `Cross places ${i + 1} and ${i + 2}`);
+        g.disabled = !!autoTimer;
+        g.addEventListener('click', () => toggleGap(i));
+        bellsEl.appendChild(g);
+      }
+    });
+    document.getElementById('ring').disabled = !!autoTimer || !gaps.some(Boolean);
+    status();
+    draw();
+  }
+  function toggleGap(i) {
+    gaps[i] = !gaps[i];
+    if (gaps[i]) { if (i > 0) gaps[i - 1] = false; if (i < N - 2) gaps[i + 1] = false; }
+    render();
+  }
+  function ring() {
+    if (!gaps.some(Boolean)) return;
+    rows.push(applyGaps(current(), gaps));
+    gaps = Array(N - 1).fill(false);
+    render(); playRow(current());
+  }
+
+  function analyse() {
+    const seen = new Map(); let falseAt = -1, falseOf = -1;
+    rows.forEach((r, i) => {
+      const k = key(r);
+      const home = i === rows.length - 1 && i > 0 && k === key(rounds());
+      if (seen.has(k) && !home && falseAt < 0) { falseAt = i; falseOf = seen.get(k); }
+      if (!seen.has(k)) seen.set(k, i);
+    });
+    return { distinct: seen.size, falseAt, falseOf, home: rows.length > 1 && key(current()) === key(rounds()) };
+  }
+  function status() {
+    const a = analyse(), n = rows.length - 1;
+    let s = `<b>${n}</b> change${n === 1 ? '' : 's'} · <b>${a.distinct}</b> of 24 rows heard`;
+    if (a.falseAt >= 0) s += ` · <span class="bad">false: row ${key(rows[a.falseAt])} came again (first at change ${a.falseOf})</span>`;
+    else if (a.home && a.distinct === 24) s += ` · <b>Rounds. A true extent: every row once.</b>`;
+    else if (a.home) s += ` · <b>Rounds. A true touch of ${n} changes.</b>`;
+    else if (n === 0) s += ` · Cross a pair to begin.`;
+    statusEl.innerHTML = s;
+  }
+
+  // § blue line drawing: each block is one column of rows
+  function drawLines(cv, blocks, opts = {}) {
+    const dpr = window.devicePixelRatio || 1;
+    const colW = opts.colW || 30, rowH = opts.rowH || 22, padX = 16, padY = 12;
+    const per = Math.max(...blocks.map((bl) => bl.length)), blockW = N * colW + padX * 2;
+    const w = blockW * blocks.length, h = per * rowH + padY * 2;
+    cv.width = w * dpr; cv.height = h * dpr; cv.style.width = w + 'px'; cv.style.height = h + 'px';
+    const c = cv.getContext('2d'); c.setTransform(dpr, 0, 0, dpr, 0, 0); c.clearRect(0, 0, w, h);
+    const fg = tok('--fg'), muted = tok('--muted'), red = tok('--treble'), blue = tok('--blue'), bg = tok('--surface');
+    const blueBell = opts.follow || follow;
+    const pos = (bi, ri, place) => [bi * blockW + padX + place * colW + colW / 2, padY + ri * rowH + rowH / 2];
+    blocks.forEach((list, bi) => {
+      const path = (bell, color) => {
+        c.strokeStyle = color; c.lineWidth = 2.6; c.lineJoin = 'round'; c.lineCap = 'round';
+        c.beginPath();
+        list.forEach((r, ri) => { const [x, y] = pos(bi, ri, r.indexOf(bell)); ri ? c.lineTo(x, y) : c.moveTo(x, y); });
+        c.stroke();
+      };
+      c.globalAlpha = 0.85; path(1, red); if (blueBell !== 1) path(blueBell, blue); c.globalAlpha = 1;
+      c.font = `600 15px ${tok('--mono')}`; c.textAlign = 'center'; c.textBaseline = 'middle';
+      list.forEach((r, ri) => r.forEach((b, p) => {
+        const [x, y] = pos(bi, ri, p);
+        c.fillStyle = bg; c.fillRect(x - 7, y - 9, 14, 18);
+        c.fillStyle = (opts.falseAt === ri) ? red : (b === 1 || b === blueBell) ? fg : muted;
+        c.fillText(String(b), x, y);
+      }));
+    });
+  }
+  function draw() {
+    const a = analyse();
+    drawLines(canvas, [rows], { falseAt: a.falseAt });
+    linesBox.scrollTop = linesBox.scrollHeight;
+  }
+
+  // § auto-ring
+  function stopAuto() { if (autoTimer) clearInterval(autoTimer); autoTimer = null; }
+  function auto(seq) {
+    reset();
+    let i = 0;
+    playRow(current());
+    autoTimer = setInterval(() => {
+      if (i >= seq.length) { stopAuto(); render(); return; }
+      rows.push(applyPn(current(), seq[i++])); render(); playRow(current());
+    }, soundOn ? N * BEAT * 1000 + 160 : 260);
+    render();
+  }
+  const HUNT = 'x 14 x 14 x 14 x 14'.split(' ');
+  const BOB = Array(3).fill('x 14 x 14 x 14 x 12'.split(' ')).flat();
+
+  document.getElementById('ring').addEventListener('click', ring);
+  document.getElementById('reset').addEventListener('click', reset);
+  document.getElementById('auto-hunt').addEventListener('click', () => auto(HUNT));
+  document.getElementById('auto-bob').addEventListener('click', () => auto(BOB));
+  const soundBtn = document.getElementById('sound');
+  soundBtn.addEventListener('click', () => {
+    try {
+      if (!ac) ac = new (window.AudioContext || window.webkitAudioContext)();
+      if (ac.state === 'suspended') ac.resume();
+      soundOn = !soundOn;
+    } catch (e) { soundOn = false; }
+    soundBtn.textContent = soundOn ? 'Sound: on' : 'Sound: off';
+    soundBtn.setAttribute('aria-pressed', String(soundOn));
+    if (soundOn) playRow(current());
+  });
+  document.addEventListener('keydown', (e) => {
+    if (e.target.closest('input, textarea') || autoTimer) return;
+    const d = document.activeElement;
+    if (e.key >= '1' && e.key <= String(N - 1)) { toggleGap(+e.key - 1); e.preventDefault(); }
+    else if (e.key === 'Enter' && !(d && d.tagName === 'BUTTON')) { ring(); e.preventDefault(); }
+  });
+
+  // § static figure: Plain Bob Minimus extent, three columns of one lead each
+  function drawFigure() {
+    const list = [rounds()];
+    for (const pn of BOB) list.push(applyPn(list[list.length - 1], pn));
+    // a lead is 8 changes; each column repeats the lead end it starts from, as ringers draw it
+    drawLines(document.getElementById('pbm'), [list.slice(0, 9), list.slice(8, 17), list.slice(16, 25)], { follow: 2, colW: 24, rowH: 19 });
+  }
+
+  reset(); drawFigure();
+  const mq = window.matchMedia('(prefers-color-scheme: dark)');
+  const redraw = () => { draw(); drawFigure(); };
+  mq.addEventListener?.('change', () => setTimeout(redraw, 50));
+  new MutationObserver(() => setTimeout(redraw, 50)).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+})();
+</script>

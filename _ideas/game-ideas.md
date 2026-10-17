@@ -2,7 +2,7 @@
 
 Written 17 Oct 2026. Live copy: https://claude.ai/artifact/H18FVYZJSa1L5C7yLDjgvb
 
-Twenty-two ideas for a new standalone web game, a deep dive on Sandglass Alchemy, and six top-down adventure ideas (Minute Hero next). Kept in `_ideas/` so GitHub Pages leaves it off the live site.
+Twenty-three ideas for a new standalone web game, a deep dive on Sandglass Alchemy, and six top-down adventure ideas (Minute Hero next). Kept in `_ideas/` so GitHub Pages leaves it off the live site.
 
 ## Ground rules
 
@@ -44,6 +44,7 @@ The status column is yours to change; Shortlisted marks the picks so far, which 
 | 20 | Lastlight Outpost | colony sim | sim fans | 30–60 min | stories | L+ | Idea |
 | 21 | Fortune's Hand | solitaire roguelike | card fans | 20 min | daily deck, scores | M | Idea |
 | 22 | The Ferryman's Ledger | document-checking story | story fans, classrooms | 10–20 min | endings | M | Idea |
+| 23 | Belfry | sound and logic puzzle (change ringing) | puzzle fans, classrooms, bell ringers | 5–20 min | Daily Touch card, links that play a composition | M | Deep dive |
 
 ## Ideas 1–10
 
@@ -254,6 +255,18 @@ You run the river ferry; travelers show papers and you decide who crosses (Paper
 - **Depth:** about 20 story days with several endings, plus an endless daily mode.
 - **Why it could bring players:** "which ending did you get?"; classroom use for careful reading and ethics.
 - **Hard part:** lots of short, sharp writing, and fair generated papers.
+
+### 23. Belfry
+
+A puzzle game you can hear, built on English change ringing: ring a set of church bells through every order they can make, one swap at a time, and come home without repeating a row. Chosen as the least crowded idea: searches in October 2026 found practice simulators for ringers but no game built on these rules.
+
+- **How it plays:** three rules. Every row, each bell rings once; between rows a bell moves one place at most; no row twice, and finish on rounds (`1234`).
+- **Three modes:** Compose (the puzzle), Ring (rhythm: ring one bell yourself, judged on striking), Conduct (call bobs and singles live to bring the band home).
+- **Depth:** eight towers from 3 to 8 bells (6 to 40,320 rows), tower rules (cracked rows, tired ringers, music rows), peal boards as the long-term collection.
+- **Why it could bring players:** a Daily Touch with a spoiler-free result card, links that play a composition (a whole touch fits in a short string like `x14x14x14x12`), maths and music classrooms, and a ringing community with no game of its own.
+- **Hard part:** an obscure theme; the pitch leads with the puzzle and the sound.
+
+Full write-up with a playable four-bell demo: [Belfry concept page](https://claude.ai/artifact/Wg1Kwq3jbUS2ewdcCCWFUy) (source: `_ideas/belfry.html`): rules and terms, modes, tower rules, progression, scoring, the Daily, puzzle checking, standalone versus arcade, an 11-PR build plan, risks and open questions.
 
 ## Sandglass Alchemy: the pitch and the simulation
 
