@@ -481,6 +481,8 @@ A curse gives you 60 seconds per life (as in the indie game Minit). Each life yo
 
 Try it: [Minute Hero playable sketch](https://claude.ai/artifact/X9bWF3LxtUucjYeJzNeyUQ) (4 screens, 40-second lives, sword, key, bridge shortcut, shrine bell).
 
+Concept in depth: [Minute Hero concept page](https://claude.ai/artifact/JxBgUx9yHYF38ty1jKLNV5) (source: `_ideas/minute-hero.html`): the world, the 60-second rule, the minute's schedule, 8 tools, a sample session, and mockups drawn in code.
+
 ### E. Bramble & Beast: switch between two heroes
 
 A child and a huge, gentle forest beast travel together. The child fits through gaps, reads signs and uses tools; the beast pushes boulders, carries the child across water and frightens enemies. Swap between them with one button.
