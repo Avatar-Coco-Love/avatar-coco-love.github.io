@@ -1,0 +1,836 @@
+<title>Pocket Links</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lilita+One&family=Nunito+Sans:ital,opsz,wght@0,6..12,400;0,6..12,700;0,6..12,800;1,6..12,400&family=DM+Mono:wght@500&display=swap">
+<style>
+/* Layout: a scorecard-like reading column (about 66ch); mockups sit in phone bezels or plain frames; tables scroll on their own. */
+:root {
+  --bg: #f3f6f1;
+  --surface: #ffffff;
+  --fg: #17251c;
+  --muted: #55665a;
+  --line: #d6e0d8;
+  --turf: #2a8a49;
+  --flag: #d93f34;
+  --chip: #e5ede6;
+  --bezel: #17251c;
+  --gold: #a86f00;
+  --display: "Lilita One", "Arial Rounded MT Bold", system-ui, sans-serif;
+  --body: "Nunito Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: "DM Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0f1712; --surface: #16211a; --fg: #e8efe9; --muted: #9db0a2; --line: #283a2e;
+    --turf: #5cc27a; --flag: #ff6d61; --chip: #1e2b22; --bezel: #050806; --gold: #e8b34a; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0f1712; --surface: #16211a; --fg: #e8efe9; --muted: #9db0a2; --line: #283a2e;
+  --turf: #5cc27a; --flag: #ff6d61; --chip: #1e2b22; --bezel: #050806; --gold: #e8b34a; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); font-family: var(--body); font-size: 17px; line-height: 1.6; }
+.wrap {
+  max-width: 1060px; margin: 0 auto;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 32px 72px;
+  display: grid; gap: 56px;
+}
+section { display: grid; gap: 18px; min-width: 0; }
+.col { max-width: 66ch; display: grid; gap: 14px; min-width: 0; }
+h1, h2, h3 { font-family: var(--display); font-weight: 400; text-wrap: balance; margin: 0; line-height: 1.1; }
+h1 { font-size: clamp(48px, 9vw, 88px); letter-spacing: 0.01em; color: var(--turf); }
+h2 { font-size: clamp(28px, 4.2vw, 38px); }
+h3 { font-size: 21px; }
+p { margin: 0; }
+b { font-weight: 800; }
+.eyebrow { font-family: var(--mono); font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--flag); }
+.lede { font-size: 21px; line-height: 1.5; max-width: 40ch; }
+.muted { color: var(--muted); }
+.n { font-family: var(--mono); font-variant-numeric: tabular-nums; white-space: nowrap; }
+a { color: var(--turf); }
+a:focus-visible { outline: 2px solid var(--flag); outline-offset: 2px; }
+
+.hero { display: grid; gap: 28px; grid-template-columns: minmax(0, 1fr) minmax(0, 330px); align-items: center; }
+@media (max-width: 760px) { .hero { grid-template-columns: minmax(0, 1fr); } }
+.facts { display: flex; flex-wrap: wrap; gap: 8px; list-style: none; padding: 0; margin: 4px 0 0; }
+.facts li { background: var(--chip); border-radius: 999px; padding: 4px 12px; font-size: 14px; }
+.facts b { font-family: var(--mono); font-weight: 500; color: var(--turf); }
+
+canvas.mk { display: block; width: 100%; height: auto; max-width: 100%; }
+figure { margin: 0; display: grid; gap: 10px; min-width: 0; align-content: start; }
+figcaption { font-size: 15px; color: var(--muted); max-width: 62ch; }
+figcaption b { color: var(--fg); }
+.phone { background: var(--bezel); border-radius: 32px; padding: 12px 10px 14px; max-width: 330px; }
+.phone canvas { border-radius: 20px; }
+.phones { display: grid; grid-template-columns: repeat(2, minmax(0, 330px)); gap: 28px; }
+@media (max-width: 680px) { .phones { grid-template-columns: minmax(0, 330px); } }
+.frame { border-radius: 10px; overflow: hidden; border: 1px solid var(--line); }
+
+.pieces { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 14px; }
+.piece { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 12px; display: grid; grid-template-columns: 76px minmax(0, 1fr); gap: 2px 12px; align-content: start; }
+.piece canvas { grid-row: span 3; width: 76px; height: 76px; border-radius: 8px; }
+.piece h3 { font-size: 18px; }
+.piece p { font-size: 14px; line-height: 1.45; }
+.piece .cue { font-size: 12px; font-family: var(--mono); color: var(--muted); }
+
+.week { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 12px; }
+@media (max-width: 900px) { .week { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+@media (max-width: 520px) { .week { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.day { display: grid; gap: 6px; align-content: start; min-width: 0; }
+.day canvas { border-radius: 10px; }
+.day .d { font-family: var(--mono); font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+.day h3 { font-size: 17px; }
+.day p { font-size: 13px; line-height: 1.4; color: var(--muted); }
+.dots { display: flex; gap: 3px; }
+.dots i { width: 8px; height: 8px; border-radius: 50%; background: var(--line); }
+.dots i.on { background: var(--flag); }
+
+.modes { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+@media (max-width: 700px) { .modes { grid-template-columns: minmax(0, 1fr); } }
+.mode { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 16px 18px; display: grid; gap: 8px; align-content: start; }
+.mode .len { font-family: var(--mono); font-size: 13px; color: var(--turf); }
+
+.tablewrap { overflow-x: auto; min-width: 0; }
+table { border-collapse: collapse; width: 100%; font-size: 15px; }
+th, td { text-align: left; vertical-align: top; padding: 9px 12px; border-bottom: 1px solid var(--line); }
+th { font-family: var(--mono); font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); font-weight: 500; }
+.wide { min-width: 600px; }
+.bars { display: grid; gap: 3px; min-width: 110px; }
+.bars span { display: grid; grid-template-columns: 58px 1fr; gap: 6px; align-items: center; font-size: 12px; color: var(--muted); }
+.bars i { display: block; height: 6px; border-radius: 3px; background: var(--chip); position: relative; overflow: hidden; }
+.bars i::after { content: ""; position: absolute; inset: 0 auto 0 0; width: var(--v); background: var(--turf); border-radius: 3px; }
+
+.card { font-family: var(--mono); font-variant-numeric: tabular-nums; }
+.card table { min-width: 520px; font-size: 15px; }
+.card th, .card td { text-align: center; padding: 7px 6px; }
+.card td:first-child, .card th:first-child { text-align: left; font-family: var(--body); font-weight: 700; }
+.card tr.par td { color: var(--muted); }
+.card .tot { font-weight: 700; }
+.pc { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 6px; vertical-align: 0; }
+.ace { color: var(--gold); font-weight: 700; }
+
+.chat { background: var(--surface); border: 1px solid var(--line); border-radius: 18px; padding: 16px; display: grid; gap: 10px; max-width: 360px; }
+.chat .who { font-size: 12px; color: var(--muted); }
+.bubble { border-radius: 16px; padding: 10px 14px; font-size: 15px; line-height: 1.45; white-space: pre-line; max-width: 92%; }
+.bubble.me { justify-self: end; background: var(--turf); color: var(--surface); border-bottom-right-radius: 4px; }
+.bubble.them { justify-self: start; background: var(--chip); border-bottom-left-radius: 4px; }
+.bubble .sq { letter-spacing: 1px; }
+.bubble u { text-decoration: underline; }
+
+.day-flow { list-style: none; padding: 0; margin: 0; display: grid; gap: 14px; max-width: 70ch; }
+.day-flow li { display: grid; grid-template-columns: 64px minmax(0, 1fr); gap: 14px; }
+.day-flow .t { font-family: var(--mono); color: var(--flag); padding-top: 1px; }
+.holes { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px; }
+.holes span { width: 28px; height: 28px; border-radius: 6px; display: grid; place-items: center; font-family: var(--mono); font-size: 13px; background: var(--chip); }
+.holes .u { background: var(--turf); color: var(--surface); }
+.holes .a { background: var(--gold); color: var(--surface); }
+.holes .o { outline: 2px solid var(--flag); outline-offset: -2px; }
+
+.two { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 28px; align-items: start; }
+@media (max-width: 760px) { .two { grid-template-columns: minmax(0, 1fr); } }
+ul.plain, ol.plan { margin: 0; padding-left: 22px; display: grid; gap: 8px; max-width: 66ch; }
+.rule { border-left: 3px solid var(--turf); padding-left: 14px; max-width: 62ch; }
+kbd { font-family: var(--mono); font-size: 13px; background: var(--chip); border: 1px solid var(--line); border-bottom-width: 2px; border-radius: 4px; padding: 0 5px; }
+.foot { font-size: 14px; color: var(--muted); border-top: 1px solid var(--line); padding-top: 16px; }
+</style>
+
+<div class="wrap">
+
+<header class="hero">
+  <div class="col">
+    <p class="eyebrow">Idea 15 · mini golf · concept</p>
+    <h1>Pocket Links</h1>
+    <p class="lede">Mini golf with a new nine-hole course every day, the same for everyone. Drag back, let go, and send your scorecard to the family chat.</p>
+    <ul class="facts">
+      <li><b>9</b> holes a day</li>
+      <li><b>5–8 min</b> a round</li>
+      <li><b>7</b> grounds, one per weekday</li>
+      <li><b>1–4</b> players on one phone</li>
+      <li>phones and PCs</li>
+    </ul>
+  </div>
+  <figure>
+    <div class="phone"><canvas class="mk" id="c-hole" data-w="180" data-h="340" aria-label="Phone mockup: Daily course 42, hole 4 of the Greenhouse, par 3. The player drags back from the ball; a dotted aim line runs up past a windmill toward the cup."></canvas></div>
+    <figcaption><b>Hole 4, Tuesday's Greenhouse.</b> Drag back anywhere on the screen. The dots show aim and power up to the first wall. The windmill turns while you aim.</figcaption>
+  </figure>
+</header>
+
+<section>
+  <div class="col">
+    <h2>The idea in full</h2>
+    <p>Every morning a new nine-hole course appears, built from the date. Everyone in the world plays the same nine holes, and your score is your strokes against par. When you sink the ninth putt you get a scorecard to share. It looks like a Wordle result: one square per hole, colored by how you did.</p>
+    <p>Mini golf works for this because everyone already knows how to play it: grandparents, six-year-olds, people who never play games. A putt takes a second to learn, and a good bank shot off two walls feels great at any age. Each hole fits on one phone screen, so a round is nine short moments, each with its own little puzzle.</p>
+    <p>The course changes by weekday, like a newspaper crossword. Monday's Seaside Pier is gentle, Saturday's Castle Ruins is the hardest, and Sunday's Meadow is a wide, easy course for families. Behind the Daily sits a Tour of hand-picked courses with stars and new putters for people who want more, and a pass-the-phone mode for up to four players.</p>
+  </div>
+</section>
+
+<section>
+  <h2>A round, up close</h2>
+  <div class="phones">
+    <figure>
+      <div class="phone"><canvas class="mk" id="c-card" data-w="180" data-h="340" aria-label="Phone mockup of the end-of-round scorecard: 26 strokes, 3 under par, a hole-in-one on hole 3, buttons to share the card and send a ghost link."></canvas></div>
+      <figcaption><b>After hole 9.</b> Your total, a square for each hole, and two ways to share: the card as text, or a ghost link that shows your actual putts.</figcaption>
+    </figure>
+    <div class="col">
+      <h3>How a putt works</h3>
+      <ul class="plain">
+        <li><b>Drag back from anywhere</b>, not from the ball, so your finger never covers it. The further you drag, the harder the putt. Drag back to where you started to cancel.</li>
+        <li><b>The aim line</b> is a row of dots that stops at the first wall. On Monday and Sunday it also shows the first bounce. Bank shots past that are yours to work out.</li>
+        <li><b>Fine aim</b>: after you have pulled back, sliding your finger sideways turns the aim slowly. On PC, <kbd>←</kbd> <kbd>→</kbd> aim (with <kbd>Shift</kbd> for fine steps), <kbd>↑</kbd> <kbd>↓</kbd> set power, <kbd>Space</kbd> putts.</li>
+        <li><b>Six strokes at most.</b> If the ball isn't in after six, the game picks it up and writes 7, like a real mini golf course. Nobody gets stuck on one hole.</li>
+        <li><b>Water</b> costs one stroke, and the ball goes back to where it was hit from.</li>
+      </ul>
+      <h3>Scoring</h3>
+      <p>Each hole has a par of 2, 3 or 4, set by test bots (see "How holes are made"). A Daily course's par runs from about 25 on Sunday to 32 on Saturday. The card's squares:</p>
+      <ul class="plain">
+        <li>⭐ hole-in-one · 🟩 under par · ⬜ par · 🟨 one over · 🟥 two or more over</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="col">
+    <h2>Course pieces</h2>
+    <p>Holes are put together from a dozen kinds of piece. Each one changes how the ball moves in one clear way, and each has its own pattern as well as its own color, so nothing depends on telling colors apart.</p>
+  </div>
+  <div class="pieces" id="pieces"></div>
+</section>
+
+<section>
+  <div class="col">
+    <h2>The week</h2>
+    <p>Seven grounds, one per weekday. Each has its own look and favors a few pieces, so Tuesday always feels like Tuesday. Difficulty climbs from Monday to Saturday, and Sunday is the family day.</p>
+  </div>
+  <div class="week" id="week"></div>
+</section>
+
+<section>
+  <div class="col">
+    <h2>Ways to play</h2>
+  </div>
+  <div class="modes">
+    <div class="mode">
+      <h3>The Daily</h3>
+      <span class="len">9 holes · 5–8 minutes · once a day</span>
+      <p>Today's course, the same for everyone. Your first round is the one that counts for the card. After that you can replay any hole for practice. The last 30 Dailies stay in an archive to play late.</p>
+    </div>
+    <div class="mode">
+      <h3>The Tour</h3>
+      <span class="len">8 courses · 72 holes · about 90 minutes</span>
+      <p>Hand-picked courses with three stars per hole: finish, make par, beat par. Stars open the next course and new putters. Each hole also has one trick shot to find, such as an ace or a bank off three walls. This is where a player who likes the game finds hours of it.</p>
+    </div>
+    <div class="mode">
+      <h3>Pass the phone</h3>
+      <span class="len">1–4 players · any course</span>
+      <p>Take turns on one phone, on the Daily or a Tour course. The scorecard keeps everyone's strokes. A younger player can turn on a bigger aim line and a gentler maximum (four strokes, then the ball is picked up) without affecting anyone else.</p>
+    </div>
+    <div class="mode">
+      <h3>Ghost race</h3>
+      <span class="len">from a link · any Daily</span>
+      <p>Open a friend's ghost link and play the same course with their ball on the green beside yours, replaying their real putts. After each hole you see both scores.</p>
+    </div>
+  </div>
+  <div class="col">
+    <h3>A family round</h3>
+    <p>What pass-the-phone looks like at the end of Sunday's Meadow.</p>
+  </div>
+  <div class="tablewrap card">
+    <table>
+      <thead><tr><th>Hole</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th><th>9</th><th>Total</th></tr></thead>
+      <tbody id="family"></tbody>
+    </table>
+  </div>
+</section>
+
+<section>
+  <div class="col">
+    <h2>Putters</h2>
+    <p>Tour stars unlock putters that change how the ball behaves. The Daily always uses the Classic, so every card compares fairly.</p>
+  </div>
+  <div class="tablewrap">
+    <table class="wide">
+      <thead><tr><th>Putter</th><th>Feel</th><th>Good for</th><th>Unlocks</th></tr></thead>
+      <tbody id="putters"></tbody>
+    </table>
+  </div>
+</section>
+
+<section>
+  <div class="col">
+    <h2>How a day feels</h2>
+    <p>A Tuesday for someone whose sister started a Pocket Links thread in the family chat.</p>
+  </div>
+  <ol class="day-flow" id="dayflow"></ol>
+  <p class="rule">Seven minutes in the morning, ten at night, and a reason to open the family chat. The Daily brings people back each day; the Tour is what holds someone past ten minutes.</p>
+</section>
+
+<section>
+  <div class="two">
+    <div class="col">
+      <h2>How it spreads</h2>
+      <p><b>The card.</b> Plain text with nine squares, small enough for any chat. People who don't play see a green-and-yellow row and a link, the same pull that made Wordle spread.</p>
+      <p><b>Ghost links.</b> The physics gives the same result on every device, so a link can carry your putts themselves: about two bytes per stroke, under 80 characters for a round. Opening it replays your round beside theirs. It also proves the score, because the ghost has to sink every putt it claims.</p>
+      <p><b>Families.</b> One game on one phone reaches up to four people at the table.</p>
+      <p><b>No accounts, no server.</b> The course comes from the date, and scores travel in the links people send. Names typed for pass-the-phone stay on the phone.</p>
+    </div>
+    <div class="chat" aria-label="Mockup of a family chat sharing two Pocket Links scorecards">
+      <span class="who">Family · Tuesday 7:48</span>
+      <div class="bubble them">Pocket Links #42 · Greenhouse
+27 (−2)
+<span class="sq">🟩⬜⬜🟨🟩⬜🟩⬜⬜</span>
+<u>ghost link</u></div>
+      <div class="bubble me">Pocket Links #42 · Greenhouse
+26 (−3) ⭐
+<span class="sq">🟩⬜⭐🟨⬜⬜🟩⬜⬜</span>
+<u>ghost link</u></div>
+      <div class="bubble them">ACE on 3?? I'm watching your ghost</div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="col">
+    <h2>How holes are made</h2>
+    <p>A Daily is built from the date. The generator puts together hand-made sections (tee pads, corridors, corners, bowls, islands, gates) and fills them with pieces from that day's grounds. Then test bots putt each candidate hole thousands of times before anyone sees it.</p>
+  </div>
+  <div class="two">
+    <figure>
+      <div class="frame"><canvas class="mk" id="c-bots" data-w="200" data-h="260" aria-label="Sketch of a test bot run: a dog-leg hole with hundreds of dots where first putts stopped, teal for a skilled bot and orange for a novice bot."></canvas></div>
+      <figcaption id="botcap"><b>Where first putts stop.</b> A small simulation of the test bots on a dog-leg hole: teal dots are a skilled bot's first putts, orange a novice's, both aiming for the same bank shot.</figcaption>
+    </figure>
+    <div class="col">
+      <h3>Rules a hole has to pass</h3>
+      <ul class="plain">
+        <li><b>Possible:</b> the skilled bot sinks it in 4 or fewer on 99% of tries.</li>
+        <li><b>Not trivial:</b> the skilled bot's hole-in-one rate stays under 15%, and a straight putt never holes it.</li>
+        <li><b>Fair to beginners:</b> the novice bot averages no more than par + 2.</li>
+        <li><b>Par</b> is the skilled bot's average, rounded up.</li>
+        <li><b>A course</b> needs a mix of pars and at least four kinds of piece, with no two holes alike.</li>
+      </ul>
+      <p>The bots aim with a little random error, a degree or so for the skilled bot and several degrees for the novice. Without that error, every hole looks easy.</p>
+      <p>Tour courses come from the same generator. The difference is that a person plays the candidates and keeps the best ones, so the Tour is hand-picked without being hand-built.</p>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="two">
+    <div class="col">
+      <h2>Tech, phones and access</h2>
+      <ul class="plain">
+        <li><b>Same result everywhere:</b> physics in whole numbers on a fixed time step, with no trigonometry inside the step, so a putt rolls the same on every browser. A test replays recorded rounds in Chrome, Firefox and Safari's engine.</li>
+        <li><b>One screen per hole:</b> holes are designed in a tall 9:16 box. In landscape the scorecard sits beside the hole.</li>
+        <li><b>Drawn in code:</b> flat shapes and patterns on a canvas, sounds synthesized (the putt's tock, the cup's rattle, the windmill's creak). No asset files, as in Foldwork.</li>
+        <li><b>Offline:</b> installable, and the Daily works without a connection, because it is built from the date.</li>
+        <li><b>Access:</b> full keyboard play, patterns on every surface, reduced motion (no screen shake, slower windmills), and the scorecard is real text for screen readers.</li>
+      </ul>
+    </div>
+    <div class="col">
+      <h2>Arcade or standalone?</h2>
+      <p><b>Standalone, like Foldwork.</b> The Daily, ghost links and the Tour need their own links and saves, and those fit awkwardly inside the arcade's sandboxed frame. The arcade's design rules ask for two or three different verbs per game, and mini golf has one: the putt. Its roadmap also favors improving existing games over adding new ones.</p>
+      <p>To borrow the arcade's players, link Pocket Links from the arcade's footer and the projects page. A share card that lands in a family chat should bring more new people than the arcade can.</p>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="col">
+    <h2>A first build plan</h2>
+    <p>About six PRs. After the fourth, there is a Daily that people can play and share.</p>
+  </div>
+  <ol class="plan">
+    <li><b>Feel:</b> whole-number physics, one hand-made hole, drag to putt on touch, mouse and keyboard, cup and strokes. Hand-play it on a phone before going further.</li>
+    <li><b>First pieces:</b> walls of any shape, slopes, sand, water and bumpers; the end-of-hole moment, a scorecard and saves.</li>
+    <li><b>The generator and bots:</b> sections and pieces put together from a seed; skilled and novice bots; a balance script with one line per hole.</li>
+    <li><b>The Daily:</b> built from the date, the share card, the 30-day archive, offline install.</li>
+    <li><b>More pieces and the week:</b> windmills, conveyors, fans, pipes; the seven grounds.</li>
+    <li><b>Together:</b> ghost links, pass-the-phone for 1–4 players, sound, and a family playtest.</li>
+  </ol>
+  <p class="col">Afterwards: the Tour, putters, magnets, ramps and gates. These are mostly new data.</p>
+</section>
+
+<section>
+  <div class="two">
+    <div class="col">
+      <h2>Risks</h2>
+      <ul class="plain">
+        <li><b>The putt has to feel right.</b> Everything rests on it. That's why the first PR is one hole and a phone playtest.</li>
+        <li><b>Generated holes can feel the same.</b> Hand-made sections, seven grounds and the "no two holes alike" rule are the answer. The Tour is hand-picked as well.</li>
+        <li><b>Different results on different devices</b> would break ghost links. Whole-number physics and the cross-browser replay test prevent that.</li>
+        <li><b>Crowded genre.</b> There are many golf games on app stores. The difference is the daily card in a chat, with nothing to install first.</li>
+      </ul>
+    </div>
+    <div class="col">
+      <h2>Open questions for you</h2>
+      <ol class="plan">
+        <li><b>The name.</b> Keep "Pocket Links"?</li>
+        <li><b>One counted round a day,</b> with practice after? I recommend yes; it's what makes cards comparable.</li>
+        <li><b>The look.</b> Flat shapes as in these mockups, or pixel art?</li>
+        <li><b>A worldwide daily leaderboard?</b> I'd leave it out at first: it needs a server and, with children playing, an age question. Cards and ghosts compare scores between friends without one.</li>
+        <li><b>Who playtests the family mode?</b> It needs a real family or class round before it ships.</li>
+      </ol>
+    </div>
+  </div>
+</section>
+
+<p class="foot">Concept for idea 15 in <code>_ideas/game-ideas.md</code>, written 17 Oct 2026. The pictures are mockups drawn in code; the bot sketch runs a small simulation in your browser, but it's not the game's physics.</p>
+
+</div>
+
+<script>
+// § canvas setup
+function setup(id, w, h) {
+  const c = typeof id === 'string' ? document.getElementById(id) : id;
+  w = w || +c.dataset.w; h = h || +c.dataset.h;
+  const S = 3; c.width = w * S; c.height = h * S;
+  const x = c.getContext('2d'); x.setTransform(S, 0, 0, S, 0, 0);
+  return x;
+}
+function rr(x, X, Y, w, h, r) { x.beginPath(); x.roundRect ? x.roundRect(X, Y, w, h, r) : x.rect(X, Y, w, h); }
+function poly(x, pts) { x.beginPath(); pts.forEach(([a, b], i) => i ? x.lineTo(a, b) : x.moveTo(a, b)); x.closePath(); }
+const DISPLAY = '"Lilita One", "Arial Rounded MT Bold", system-ui, sans-serif';
+const MONO = '"DM Mono", ui-monospace, Menlo, monospace';
+const BODY = '"Nunito Sans", system-ui, sans-serif';
+
+// § grounds (fixed palettes, independent of page theme)
+const TH = {
+  pier:      { name: 'Seaside Pier',  bg: '#5fb3dd', deco: '#4aa0cc', turf: '#3f9e58', stripe: '#49aa62', wall: '#c49a66', hi: '#e0bd8c', ink: '#123b52' },
+  greenhouse:{ name: 'Greenhouse',    bg: '#d5e8d2', deco: '#b9d8b6', turf: '#3c9853', stripe: '#46a45e', wall: '#7c5538', hi: '#a77b55', ink: '#20402a' },
+  clock:     { name: 'Clockworks',    bg: '#3a3850', deco: '#4a4766', turf: '#4a8f5c', stripe: '#539a65', wall: '#c39a3c', hi: '#e8c76a', ink: '#f2e6c4' },
+  snow:      { name: 'Snow Fair',     bg: '#e4edf6', deco: '#cfdbe9', turf: '#5aa27e', stripe: '#64ad88', wall: '#ffffff', hi: '#bcd0e6', ink: '#2b4560' },
+  carnival:  { name: 'Night Carnival',bg: '#1f1846', deco: '#2c2360', turf: '#2a7d6c', stripe: '#318877', wall: '#ff5ea8', hi: '#ffd0e6', ink: '#ffe36b' },
+  castle:    { name: 'Castle Ruins',  bg: '#8d927e', deco: '#7c816d', turf: '#4c8b47', stripe: '#559650', wall: '#a7a49a', hi: '#cfccc2', ink: '#2c2f25' },
+  meadow:    { name: 'Meadow',        bg: '#bfe3a1', deco: '#a9d68a', turf: '#5aae50', stripe: '#64b85a', wall: '#d8bf8e', hi: '#f0dcb2', ink: '#3b4a22' },
+};
+
+// § piece drawing
+function sand(x, cx, cy, rx, ry) {
+  x.save(); x.beginPath(); x.ellipse(cx, cy, rx, ry, 0, 0, Math.PI * 2);
+  x.fillStyle = '#ead39a'; x.fill(); x.clip();
+  x.fillStyle = '#c9ae6c';
+  for (let i = -rx; i < rx; i += 4) for (let j = -ry; j < ry; j += 4) x.fillRect(cx + i + ((j / 4) % 2 ? 2 : 0), cy + j, 1, 1);
+  x.restore();
+}
+function water(x, X, Y, w, h) {
+  rr(x, X, Y, w, h, 6); x.fillStyle = '#2f7fc4'; x.fill();
+  x.save(); rr(x, X, Y, w, h, 6); x.clip();
+  x.strokeStyle = '#7cc0f0'; x.lineWidth = 1.2;
+  for (let j = Y + 5; j < Y + h; j += 7) for (let i = X + ((j / 7) % 2 ? 2 : 6); i < X + w; i += 12) { x.beginPath(); x.moveTo(i, j); x.quadraticCurveTo(i + 2.5, j - 2, i + 5, j); x.stroke(); }
+  x.restore();
+}
+function slope(x, X, Y, w, h, dir, col) {
+  x.save(); x.fillStyle = 'rgba(255,255,255,0.12)'; x.fillRect(X, Y, w, h);
+  x.strokeStyle = col || 'rgba(255,255,255,0.55)'; x.lineWidth = 1.6; x.lineJoin = 'round';
+  const [dx, dy] = dir;
+  for (let i = X + 8; i < X + w - 2; i += 12) for (let j = Y + 8; j < Y + h - 2; j += 12) {
+    x.beginPath(); x.moveTo(i - 3 * dx - 3 * dy, j - 3 * dy - 3 * dx); x.lineTo(i + 2 * dx, j + 2 * dy); x.lineTo(i - 3 * dx + 3 * dy, j - 3 * dy + 3 * dx); x.stroke();
+  }
+  x.restore();
+}
+function bumper(x, cx, cy, r) {
+  x.beginPath(); x.arc(cx, cy + 1.2, r, 0, Math.PI * 2); x.fillStyle = 'rgba(0,0,0,0.25)'; x.fill();
+  x.beginPath(); x.arc(cx, cy, r, 0, Math.PI * 2); x.fillStyle = '#e04b3d'; x.fill();
+  x.beginPath(); x.arc(cx, cy, r * 0.62, 0, Math.PI * 2); x.fillStyle = '#fff4e6'; x.fill();
+  x.beginPath(); x.arc(cx, cy, r * 0.28, 0, Math.PI * 2); x.fillStyle = '#e04b3d'; x.fill();
+}
+function windmill(x, cx, cy, ang, s = 1) {
+  x.save(); x.translate(cx, cy);
+  rr(x, -9 * s, -9 * s, 18 * s, 18 * s, 2); x.fillStyle = '#b5532f'; x.fill();
+  x.fillStyle = '#7a3420'; x.fillRect(-9 * s, -2 * s, 18 * s, 4 * s);
+  x.rotate(ang);
+  for (let i = 0; i < 4; i++) {
+    x.rotate(Math.PI / 2);
+    x.beginPath(); x.moveTo(-1.5 * s, 0); x.lineTo(-3.5 * s, -26 * s); x.lineTo(3.5 * s, -26 * s); x.lineTo(1.5 * s, 0); x.closePath();
+    x.fillStyle = '#fbf3df'; x.fill(); x.strokeStyle = '#6b4a2e'; x.lineWidth = 1; x.stroke();
+    x.strokeStyle = 'rgba(107,74,46,0.5)'; x.beginPath(); x.moveTo(0, -6 * s); x.lineTo(0, -25 * s); x.stroke();
+  }
+  x.beginPath(); x.arc(0, 0, 3 * s, 0, Math.PI * 2); x.fillStyle = '#6b4a2e'; x.fill();
+  x.restore();
+}
+function conveyor(x, X, Y, w, h, dir) {
+  rr(x, X, Y, w, h, 3); x.fillStyle = '#3d4250'; x.fill();
+  x.strokeStyle = '#6c7386'; x.lineWidth = 1;
+  for (let i = X + 3; i < X + w; i += 5) { x.beginPath(); x.moveTo(i, Y + 1); x.lineTo(i, Y + h - 1); x.stroke(); }
+  x.fillStyle = '#ffd25a';
+  for (let i = X + 8; i < X + w - 4; i += 14) { const c = Y + h / 2; x.beginPath(); x.moveTo(i - 3 * dir, c - 4); x.lineTo(i + 3 * dir, c); x.lineTo(i - 3 * dir, c + 4); x.closePath(); x.fill(); }
+}
+function fan(x, cx, cy, dir) {
+  rr(x, cx - 9, cy - 9, 18, 18, 4); x.fillStyle = '#5b6375'; x.fill();
+  x.beginPath(); x.arc(cx, cy, 6.5, 0, Math.PI * 2); x.fillStyle = '#2e3340'; x.fill();
+  x.fillStyle = '#c9d2e3';
+  for (let i = 0; i < 3; i++) { const a = i * 2.094 + 0.4; x.beginPath(); x.ellipse(cx + Math.cos(a) * 3, cy + Math.sin(a) * 3, 3.2, 1.6, a, 0, Math.PI * 2); x.fill(); }
+  x.strokeStyle = 'rgba(255,255,255,0.75)'; x.lineWidth = 1.2; x.setLineDash([4, 4]);
+  for (let k = -1; k <= 1; k++) { x.beginPath(); x.moveTo(cx + 12 * dir, cy + k * 5); x.lineTo(cx + 44 * dir, cy + k * 7); x.stroke(); }
+  x.setLineDash([]);
+}
+function pipe(x, cx, cy, col) {
+  x.beginPath(); x.arc(cx, cy, 8, 0, Math.PI * 2); x.fillStyle = col; x.fill();
+  x.beginPath(); x.arc(cx, cy, 5.5, 0, Math.PI * 2); x.fillStyle = '#1c1530'; x.fill();
+  x.strokeStyle = 'rgba(255,255,255,0.7)'; x.lineWidth = 1; x.beginPath(); x.arc(cx, cy, 8, 0, Math.PI * 2); x.stroke();
+}
+function magnet(x, cx, cy) {
+  x.strokeStyle = 'rgba(255,255,255,0.45)'; x.lineWidth = 1; x.setLineDash([2, 3]);
+  [14, 22].forEach(r => { x.beginPath(); x.arc(cx, cy, r, 0, Math.PI * 2); x.stroke(); });
+  x.setLineDash([]);
+  x.lineWidth = 5; x.lineCap = 'butt'; x.strokeStyle = '#d9473b';
+  x.beginPath(); x.arc(cx, cy, 6, Math.PI, 0, true); x.stroke();
+  x.fillStyle = '#d4d9e2'; x.fillRect(cx - 8.5, cy - 1, 5, 4); x.fillRect(cx + 3.5, cy - 1, 5, 4);
+}
+function ice(x, X, Y, w, h) {
+  rr(x, X, Y, w, h, 5); x.fillStyle = '#bfe4f5'; x.fill();
+  x.save(); rr(x, X, Y, w, h, 5); x.clip();
+  x.strokeStyle = 'rgba(255,255,255,0.9)'; x.lineWidth = 1;
+  for (let i = X - h; i < X + w; i += 7) { x.beginPath(); x.moveTo(i, Y + h); x.lineTo(i + h, Y); x.stroke(); }
+  x.restore();
+}
+function ramp(x, X, Y, w, h) {
+  x.fillStyle = 'rgba(0,0,0,0.2)'; rr(x, X + 1, Y + 2, w, h, 2); x.fill();
+  rr(x, X, Y, w, h, 2); x.fillStyle = '#e3a94a'; x.fill();
+  x.fillStyle = '#b97c22'; for (let j = Y + 2; j < Y + h; j += 4) x.fillRect(X + 2, j, w - 4, 1.4);
+}
+function gate(x, X1, Y1, X2, Y2, open) {
+  x.strokeStyle = '#5c4a8f'; x.lineWidth = 4; x.lineCap = 'round';
+  x.globalAlpha = open ? 0.3 : 1; x.setLineDash(open ? [3, 4] : []);
+  x.beginPath(); x.moveTo(X1, Y1); x.lineTo(X2, Y2); x.stroke();
+  x.setLineDash([]); x.globalAlpha = 1;
+}
+function button(x, cx, cy) {
+  x.beginPath(); x.arc(cx, cy, 6, 0, Math.PI * 2); x.fillStyle = '#5c4a8f'; x.fill();
+  x.beginPath(); x.arc(cx, cy, 3.5, 0, Math.PI * 2); x.fillStyle = '#c9b8ff'; x.fill();
+}
+function cup(x, cx, cy, flag = '#e0463a', tall = 30) {
+  x.beginPath(); x.ellipse(cx, cy, 5.5, 4.6, 0, 0, Math.PI * 2); x.fillStyle = '#16231a'; x.fill();
+  x.strokeStyle = 'rgba(255,255,255,0.5)'; x.lineWidth = 0.8; x.stroke();
+  x.fillStyle = 'rgba(0,0,0,0.18)'; x.beginPath(); x.moveTo(cx, cy); x.lineTo(cx + 18, cy + 4); x.lineTo(cx + 18, cy + 6); x.closePath(); x.fill();
+  x.strokeStyle = '#f2f2ea'; x.lineWidth = 1.3; x.beginPath(); x.moveTo(cx, cy); x.lineTo(cx, cy - tall); x.stroke();
+  x.fillStyle = flag; x.beginPath(); x.moveTo(cx, cy - tall); x.lineTo(cx + 14, cy - tall + 5); x.lineTo(cx, cy - tall + 10); x.closePath(); x.fill();
+}
+function ball(x, cx, cy, ghost) {
+  x.beginPath(); x.ellipse(cx + 1.2, cy + 1.8, 3.6, 2.6, 0, 0, Math.PI * 2); x.fillStyle = 'rgba(0,0,0,0.25)'; x.fill();
+  x.globalAlpha = ghost ? 0.5 : 1;
+  x.beginPath(); x.arc(cx, cy, 3.6, 0, Math.PI * 2); x.fillStyle = ghost ? '#9fe3ff' : '#ffffff'; x.fill();
+  x.strokeStyle = 'rgba(0,0,0,0.25)'; x.lineWidth = 0.6; x.stroke();
+  x.globalAlpha = 1;
+}
+function tee(x, cx, cy) { rr(x, cx - 10, cy - 7, 20, 14, 3); x.fillStyle = 'rgba(255,255,255,0.18)'; x.fill(); x.strokeStyle = 'rgba(255,255,255,0.45)'; x.lineWidth = 1; x.stroke(); }
+
+// § a hole: turf polygon with mow stripes and walls, then pieces
+function hole(x, t, turf, blocks = []) {
+  x.save(); poly(x, turf); x.fillStyle = t.turf; x.fill(); x.clip();
+  x.fillStyle = t.stripe; for (let j = 0; j < 400; j += 16) x.fillRect(0, j, 400, 8);
+  x.restore();
+  x.lineJoin = 'round';
+  poly(x, turf); x.strokeStyle = 'rgba(0,0,0,0.25)'; x.lineWidth = 7.5; x.stroke();
+  poly(x, turf); x.strokeStyle = t.wall; x.lineWidth = 6; x.stroke();
+  poly(x, turf); x.strokeStyle = t.hi; x.lineWidth = 1.2; x.stroke();
+  blocks.forEach(([X, Y, w, h]) => {
+    rr(x, X, Y + 1.5, w, h, 2.5); x.fillStyle = 'rgba(0,0,0,0.25)'; x.fill();
+    rr(x, X, Y, w, h, 2.5); x.fillStyle = t.wall; x.fill();
+    x.fillStyle = t.hi; x.fillRect(X + 1.5, Y + 1, w - 3, 1.2);
+  });
+}
+function pot(x, cx, cy) {
+  x.fillStyle = '#c0663e'; x.beginPath(); x.moveTo(cx - 7, cy); x.lineTo(cx + 7, cy); x.lineTo(cx + 5, cy + 10); x.lineTo(cx - 5, cy + 10); x.closePath(); x.fill();
+  x.fillStyle = '#a2512e'; x.fillRect(cx - 8, cy - 2, 16, 3);
+  x.fillStyle = '#3f8f4b';
+  for (let i = 0; i < 5; i++) { const a = -Math.PI / 2 + (i - 2) * 0.5; x.beginPath(); x.ellipse(cx + Math.cos(a) * 7, cy - 3 + Math.sin(a) * 7, 5, 2.2, a, 0, Math.PI * 2); x.fill(); }
+}
+
+// § mockup: hole 4 in progress
+function drawHoleMock() {
+  const x = setup('c-hole'), t = TH.greenhouse;
+  x.fillStyle = t.bg; x.fillRect(0, 0, 180, 340);
+  x.strokeStyle = t.deco; x.lineWidth = 1;
+  for (let i = 0; i < 180; i += 20) { x.beginPath(); x.moveTo(i, 40); x.lineTo(i, 300); x.stroke(); }
+  for (let j = 40; j < 300; j += 20) { x.beginPath(); x.moveTo(0, j); x.lineTo(180, j); x.stroke(); }
+  const turf = [[18, 292], [86, 292], [86, 176], [164, 176], [164, 52], [18, 52]];
+  hole(x, t, turf, [[86, 112, 34, 7]]);
+  slope(x, 96, 60, 62, 40, [1, 0]);
+  sand(x, 128, 140, 18, 11);
+  bumper(x, 34, 74, 6);
+  cup(x, 140, 80);
+  tee(x, 52, 270);
+  windmill(x, 52, 196, 0.35);
+  pot(x, 112, 214); pot(x, 146, 236); pot(x, 118, 262); pot(x, 154, 280);
+  // aim: drag point below the ball, dots up the corridor
+  const bx = 52, by = 270, ax = -0.16, ay = -1;
+  x.fillStyle = '#ffffff';
+  for (let i = 1; i <= 13; i++) { const d = i * 9; x.globalAlpha = 1 - i * 0.055; x.beginPath(); x.arc(bx + ax * d, by + ay * d, i < 9 ? 1.6 : 1.2, 0, Math.PI * 2); x.fill(); }
+  x.globalAlpha = 1;
+  x.strokeStyle = 'rgba(255,255,255,0.6)'; x.lineWidth = 1; x.setLineDash([2, 3]);
+  x.beginPath(); x.moveTo(bx, by); x.lineTo(70, 320); x.stroke(); x.setLineDash([]);
+  ball(x, bx, by);
+  // finger
+  x.beginPath(); x.arc(70, 318, 11, 0, Math.PI * 2); x.fillStyle = 'rgba(255,255,255,0.35)'; x.fill();
+  x.strokeStyle = 'rgba(255,255,255,0.85)'; x.lineWidth = 1.5; x.stroke();
+  // top HUD
+  x.fillStyle = '#20402a'; x.fillRect(0, 0, 180, 40);
+  x.fillStyle = '#cfe8d2'; x.font = `500 7px ${MONO}`; x.fillText('DAILY #42 · TUE · GREENHOUSE', 10, 13);
+  x.fillStyle = '#ffffff'; x.font = `20px ${DISPLAY}`; x.fillText('Hole 4', 10, 33);
+  x.font = `500 8px ${MONO}`; x.fillStyle = '#cfe8d2'; x.textAlign = 'right';
+  x.fillText('PAR 3', 170, 22); x.fillText('STROKE 1', 170, 33); x.textAlign = 'left';
+  // bottom HUD with power
+  x.fillStyle = '#20402a'; x.fillRect(0, 300, 180, 40);
+  x.font = `500 7px ${MONO}`; x.fillStyle = '#cfe8d2'; x.fillText('POWER', 10, 314);
+  rr(x, 10, 320, 110, 8, 4); x.fillStyle = '#0f2617'; x.fill();
+  const g = x.createLinearGradient(10, 0, 120, 0); g.addColorStop(0, '#7fd38f'); g.addColorStop(1, '#ffd25a');
+  rr(x, 10, 320, 68, 8, 4); x.fillStyle = g; x.fill();
+  x.fillStyle = '#ffffff'; x.font = `13px ${DISPLAY}`; x.fillText('62%', 128, 328);
+  x.font = `500 6.5px ${MONO}`; x.fillStyle = '#cfe8d2'; x.textAlign = 'right'; x.fillText('6 SO FAR', 172, 314); x.textAlign = 'left';
+}
+
+// § mockup: scorecard after hole 9
+const ROUND = { par: [3, 3, 3, 3, 4, 3, 4, 3, 3], me: [2, 3, 1, 4, 4, 3, 3, 3, 3] };
+function sqColor(s, p) { return s === 1 ? '#e8b02a' : s < p ? '#3faa5b' : s === p ? '#e9ece6' : s === p + 1 ? '#f2cf4a' : '#e0503f'; }
+function drawCard() {
+  const x = setup('c-card');
+  x.fillStyle = '#f6f3e8'; x.fillRect(0, 0, 180, 340);
+  x.fillStyle = '#20402a'; x.fillRect(0, 0, 180, 92);
+  x.fillStyle = '#cfe8d2'; x.font = `500 7px ${MONO}`; x.fillText('DAILY #42 · TUE · GREENHOUSE', 12, 16);
+  x.fillStyle = '#ffffff'; x.font = `16px ${DISPLAY}`; x.fillText('Round done!', 12, 36);
+  x.font = `44px ${DISPLAY}`; x.fillText('26', 12, 80);
+  x.font = `12px ${DISPLAY}`; x.fillStyle = '#ffd25a'; x.fillText('3 under par', 66, 64);
+  x.font = `500 7px ${MONO}`; x.fillStyle = '#cfe8d2'; x.fillText('PAR 29', 66, 78);
+  // grid
+  const X0 = 12, cw = 17.3;
+  x.font = `500 6.5px ${MONO}`; x.textAlign = 'center';
+  ROUND.par.forEach((p, i) => {
+    const s = ROUND.me[i], cx = X0 + i * cw + cw / 2;
+    x.fillStyle = '#6a7a6e'; x.fillText(String(i + 1), cx, 110);
+    x.fillText(String(p), cx, 121);
+    rr(x, X0 + i * cw + 1, 126, cw - 2, cw - 2, 3); x.fillStyle = sqColor(s, p); x.fill();
+    x.fillStyle = s === p ? '#20402a' : '#ffffff'; x.font = `11px ${DISPLAY}`; x.fillText(String(s), cx, 139); x.font = `500 6.5px ${MONO}`;
+  });
+  x.textAlign = 'left'; x.fillStyle = '#6a7a6e';
+  x.fillText('HOLE', 12, 102); x.fillText('PAR / YOU', 12 + 9 * cw - 33, 102);
+  // ace banner
+  rr(x, 12, 154, 156, 26, 6); x.fillStyle = '#fff1c7'; x.fill();
+  x.fillStyle = '#8a5a00'; x.font = `12px ${DISPLAY}`; x.fillText('★ Hole-in-one on 3', 22, 171);
+  // friend
+  x.fillStyle = '#4b5b4f'; x.font = `600 8.5px ${BODY}`;
+  x.fillText('Maya: 27 (−2) · her ghost is ready', 14, 199);
+  // buttons
+  const btn = (Y, label, fill, ink) => { rr(x, 12, Y, 156, 30, 15); x.fillStyle = fill; x.fill(); x.fillStyle = ink; x.font = `13px ${DISPLAY}`; x.textAlign = 'center'; x.fillText(label, 90, Y + 20); x.textAlign = 'left'; };
+  btn(214, 'Share card', '#2a8a49', '#ffffff');
+  btn(252, 'Send ghost link', '#ffffff', '#2a8a49');
+  rr(x, 12, 252, 156, 30, 15); x.strokeStyle = '#2a8a49'; x.lineWidth = 1.5; x.stroke();
+  x.fillStyle = '#6a7a6e'; x.font = `600 8.5px ${BODY}`; x.textAlign = 'center';
+  x.fillText('Practice a hole  ·  Play the Tour', 90, 304);
+  x.fillText('Next course in 16 h 12 min', 90, 322); x.textAlign = 'left';
+}
+
+// § piece cards
+const PIECES = [
+  ['Slope', 'Painted chevrons push the ball downhill the whole time it rolls over them.', 'cue: arrows', (x) => { slope(x, 6, 6, 64, 64, [1, 0]); line(x, [[14, 58], [38, 34], [62, 22]]); }],
+  ['Sand', 'Slows the ball hard. A soft putt stops in it; a firm one gets through.', 'cue: dots', (x) => { sand(x, 38, 38, 26, 18); line(x, [[8, 64], [30, 44]]); ball(x, 30, 44); }],
+  ['Water', 'One stroke penalty, and the ball goes back to where it was hit from.', 'cue: waves', (x) => { water(x, 18, 20, 40, 36); }],
+  ['Bumper', 'A springy post that sends the ball off faster than it arrived.', 'cue: rings', (x) => { bumper(x, 40, 34, 9); line(x, [[10, 64], [34, 40], [66, 52]]); }],
+  ['Windmill', 'Blades turn at a steady speed. Time the putt, or bank around it.', 'cue: blades', (x) => windmill(x, 38, 40, 0.3, 0.9)],
+  ['Conveyor', 'Carries a slow ball along. A fast ball crosses before it can.', 'cue: rollers', (x) => { conveyor(x, 8, 28, 60, 20, 1); }],
+  ['Fan', 'Blows the ball sideways in a strip. Weaker the further out.', 'cue: dashed air', (x) => { fan(x, 14, 38, 1); }],
+  ['Pipes', 'Two pipe mouths: in one, out the other, at the same speed.', 'cue: matched rims', (x) => { pipe(x, 18, 56, '#9b6cff'); pipe(x, 58, 20, '#9b6cff'); x.setLineDash([2, 3]); x.strokeStyle = 'rgba(255,255,255,0.6)'; x.beginPath(); x.moveTo(24, 50); x.lineTo(52, 26); x.stroke(); x.setLineDash([]); }],
+  ['Magnet', 'Pulls a passing ball toward it. Can bend a putt into the cup or out of it.', 'cue: dotted rings', (x) => magnet(x, 38, 38)],
+  ['Ice', 'Almost no friction: the ball keeps going until a wall stops it.', 'cue: hatching', (x) => { ice(x, 8, 16, 60, 44); line(x, [[12, 56], [64, 24]]); }],
+  ['Ramp', 'Launches the ball over a low wall or gap. Its shadow shows where it lands.', 'cue: stripes, shadow', (x) => { ramp(x, 10, 32, 18, 14); x.strokeStyle = 'rgba(0,0,0,0.3)'; x.setLineDash([2, 3]); x.beginPath(); x.moveTo(28, 40); x.quadraticCurveTo(46, 10, 64, 40); x.stroke(); x.setLineDash([]); x.fillStyle = '#6b4a2e'; x.fillRect(42, 26, 6, 30); }],
+  ['Gate and button', 'Roll over the button to open the gate for this hole.', 'cue: purple, dashed when open', (x) => { button(x, 18, 56); gate(x, 44, 12, 44, 64, false); gate(x, 58, 12, 58, 64, true); }],
+];
+function line(x, pts) {
+  x.strokeStyle = 'rgba(255,255,255,0.85)'; x.lineWidth = 1.2; x.setLineDash([2, 3]);
+  x.beginPath(); pts.forEach(([a, b], i) => i ? x.lineTo(a, b) : x.moveTo(a, b)); x.stroke(); x.setLineDash([]);
+}
+function buildPieces() {
+  const box = document.getElementById('pieces');
+  PIECES.forEach(([name, what, cue, draw]) => {
+    const d = document.createElement('div'); d.className = 'piece';
+    const c = document.createElement('canvas'); c.className = 'mk'; c.setAttribute('aria-hidden', 'true');
+    const x = setup(c, 76, 76);
+    x.fillStyle = TH.greenhouse.turf; x.fillRect(0, 0, 76, 76);
+    x.fillStyle = TH.greenhouse.stripe; for (let j = 0; j < 76; j += 12) x.fillRect(0, j, 76, 6);
+    draw(x);
+    const h = document.createElement('h3'); h.textContent = name;
+    const p = document.createElement('p'); p.textContent = what;
+    const q = document.createElement('span'); q.className = 'cue'; q.textContent = cue;
+    d.append(c, h, p, q); box.append(d);
+  });
+}
+
+// § the week
+const WEEK = [
+  ['Mon', 'pier', 1, 'Planks over the sea. Water, bumpers, wide greens.', (x) => {
+    hole(x, TH.pier, [[14, 140], [56, 140], [56, 70], [86, 70], [86, 18], [14, 18]]);
+    water(x, 24, 64, 22, 26); bumper(x, 70, 40, 5); cup(x, 70, 30, '#e0463a', 18); tee(x, 35, 128);
+  }],
+  ['Tue', 'greenhouse', 2, 'Windmills, slopes, sand, potted plants.', (x) => {
+    hole(x, TH.greenhouse, [[14, 140], [86, 140], [86, 18], [14, 18]], [[14, 76, 44, 6]]);
+    slope(x, 20, 24, 60, 30, [1, 0]); windmill(x, 70, 100, 0.5, 0.6); sand(x, 34, 104, 12, 8); cup(x, 30, 38, '#e0463a', 18); tee(x, 30, 128);
+  }],
+  ['Wed', 'clock', 3, 'Gears and conveyors. Everything moves on a beat.', (x) => {
+    hole(x, TH.clock, [[14, 140], [86, 140], [86, 18], [14, 18]]);
+    conveyor(x, 20, 70, 60, 14, -1); x.save(); x.translate(64, 104); for (let i = 0; i < 8; i++) { x.rotate(Math.PI / 4); x.fillStyle = '#c39a3c'; x.fillRect(-3, -15, 6, 6); } x.beginPath(); x.arc(0, 0, 11, 0, Math.PI * 2); x.fill(); x.fillStyle = '#3a3850'; x.beginPath(); x.arc(0, 0, 4, 0, Math.PI * 2); x.fill(); x.restore();
+    cup(x, 50, 36, '#ffd25a', 18); tee(x, 30, 128);
+  }],
+  ['Thu', 'snow', 3, 'Ice sheets and snowbanks. Plan where it stops.', (x) => {
+    hole(x, TH.snow, [[14, 140], [86, 140], [86, 18], [50, 18], [50, 60], [14, 60]]);
+    ice(x, 20, 70, 60, 40); cup(x, 70, 34, '#e0463a', 18); tee(x, 30, 128);
+    x.fillStyle = '#ffffff'; x.beginPath(); x.ellipse(32, 54, 12, 5, 0, 0, Math.PI * 2); x.fill();
+  }],
+  ['Fri', 'carnival', 4, 'Neon, pipes and bumpers. Fast and loud.', (x) => {
+    hole(x, TH.carnival, [[14, 140], [86, 140], [86, 18], [14, 18]], [[14, 80, 56, 6]]);
+    pipe(x, 72, 112, '#4fd3ff'); pipe(x, 26, 34, '#4fd3ff'); bumper(x, 60, 50, 5); bumper(x, 40, 108, 5); cup(x, 70, 34, '#ffe36b', 18); tee(x, 30, 128);
+  }],
+  ['Sat', 'castle', 5, 'Ramps over moats, gates and buttons. The hard one.', (x) => {
+    hole(x, TH.castle, [[14, 140], [86, 140], [86, 18], [14, 18]]);
+    water(x, 14, 66, 72, 16); ramp(x, 42, 88, 16, 10); button(x, 72, 112); gate(x, 20, 48, 80, 48, false); cup(x, 50, 32, '#e0463a', 14); tee(x, 30, 128);
+  }],
+  ['Sun', 'meadow', 1, 'The family course. Gentle hills, no water.', (x) => {
+    hole(x, TH.meadow, [[14, 140], [86, 140], [86, 18], [14, 18]]);
+    x.fillStyle = 'rgba(255,255,255,0.18)'; x.beginPath(); x.ellipse(50, 80, 26, 20, 0, 0, Math.PI * 2); x.fill();
+    x.fillStyle = '#ffffff'; [[24, 30], [70, 60], [30, 98], [74, 120]].forEach(([a, b]) => { x.beginPath(); x.arc(a, b, 1.6, 0, Math.PI * 2); x.fill(); x.fillStyle = '#ffd25a'; x.beginPath(); x.arc(a, b, 0.8, 0, Math.PI * 2); x.fill(); x.fillStyle = '#ffffff'; });
+    cup(x, 60, 36, '#e0463a', 18); tee(x, 30, 128);
+  }],
+];
+function buildWeek() {
+  const box = document.getElementById('week');
+  WEEK.forEach(([d, key, diff, desc, draw]) => {
+    const t = TH[key], el = document.createElement('div'); el.className = 'day';
+    const c = document.createElement('canvas'); c.className = 'mk'; c.setAttribute('aria-hidden', 'true');
+    const x = setup(c, 100, 150);
+    x.fillStyle = t.bg; x.fillRect(0, 0, 100, 150);
+    draw(x);
+    const dd = document.createElement('span'); dd.className = 'd'; dd.textContent = d;
+    const h = document.createElement('h3'); h.textContent = t.name;
+    const dots = document.createElement('span'); dots.className = 'dots'; dots.setAttribute('aria-label', `difficulty ${diff} of 5`);
+    for (let i = 0; i < 5; i++) { const k = document.createElement('i'); if (i < diff) k.className = 'on'; dots.append(k); }
+    const p = document.createElement('p'); p.textContent = desc;
+    el.append(c, dd, h, dots, p); box.append(el);
+  });
+}
+
+// § tables and the day
+const FAMILY = [
+  ['Par', [2, 3, 2, 3, 3, 2, 4, 3, 3], null],
+  ['Mum', [2, 2, 3, 3, 2, 2, 4, 3, 2], '#2a8a49'],
+  ['Dad', [3, 3, 2, 4, 3, 1, 5, 3, 3], '#3b74c2'],
+  ['Ivy (7)', [3, 4, 3, 4, 4, 3, 4, 4, 3], '#d93f34'],
+  ['Theo (10)', [2, 3, 2, 3, 4, 2, 3, 3, 3], '#a86f00'],
+];
+const PUTTERS = [
+  ['Classic', 'Even and predictable', 'Everything; the only putter in the Daily', 'from the start', [60, 50, 70]],
+  ['Feather', 'Short reach, very fine control', 'Tight greens and putts that just have to drop', 'Tour course 2', [30, 40, 95]],
+  ['Rubber', 'Bounces off walls with almost no loss', 'Bank shots, ice holes', 'Tour course 3', [60, 95, 50]],
+  ['Iron', 'Heavy: sand and fans barely move it', 'Carnival fans, Castle moats', 'Tour course 5', [85, 25, 55]],
+  ['Curler', 'A sideways slide adds curve to the putt', 'Getting around a windmill without a bank', 'Tour course 7', [55, 50, 60]],
+];
+const DAY = [
+  ['7:41', 'A new card from Maya in the family chat: 27 on Tuesday\'s Greenhouse. The link opens straight on hole 1, with no install and no sign-in.', null],
+  ['7:42', 'Nine holes over breakfast. An ace on 3 off the bumper. On 4 the windmill blocks the first putt and it takes 4.', 'round'],
+  ['7:48', '26, three under. Share card, then the ghost link, so Maya can watch the ace.', null],
+  ['12:15', 'Maya opens the ghost at lunch and watches the ace. Her reply: "ACE on 3??"', null],
+  ['21:30', 'Ten minutes of the Tour on the sofa: three stars on course 3, which unlocks the Rubber putter.', null],
+];
+function buildTables() {
+  const fam = document.getElementById('family');
+  const par = FAMILY[0][1];
+  FAMILY.forEach(([name, s, col]) => {
+    const tr = document.createElement('tr'); if (!col) tr.className = 'par';
+    const th = document.createElement('td');
+    if (col) { const dot = document.createElement('span'); dot.className = 'pc'; dot.style.background = col; th.append(dot); }
+    th.append(document.createTextNode(name)); tr.append(th);
+    s.forEach((v, i) => { const td = document.createElement('td'); td.textContent = v; if (col && v === 1) td.className = 'ace'; tr.append(td); });
+    const tot = s.reduce((a, b) => a + b, 0), parT = par.reduce((a, b) => a + b, 0);
+    const td = document.createElement('td'); td.className = 'tot';
+    td.textContent = col ? `${tot} (${tot - parT > 0 ? '+' : tot - parT < 0 ? '−' : '±'}${Math.abs(tot - parT)})` : tot;
+    tr.append(td); fam.append(tr);
+  });
+  const pt = document.getElementById('putters');
+  PUTTERS.forEach(([n, feel, good, un, v]) => {
+    const tr = document.createElement('tr');
+    const a = document.createElement('td'); a.innerHTML = `<b>${n}</b>`;
+    const b = document.createElement('td');
+    const bars = document.createElement('div'); bars.className = 'bars';
+    ['Power', 'Bounce', 'Control'].forEach((k, i) => { const s = document.createElement('span'); s.innerHTML = `${k}<i style="--v:${v[i]}%"></i>`; bars.append(s); });
+    const f = document.createElement('div'); f.textContent = feel; f.style.marginBottom = '6px';
+    b.append(f, bars);
+    const c = document.createElement('td'); c.textContent = good;
+    const d = document.createElement('td'); d.textContent = un;
+    tr.append(a, b, c, d); pt.append(tr);
+  });
+  const fl = document.getElementById('dayflow');
+  DAY.forEach(([t, txt, extra]) => {
+    const li = document.createElement('li');
+    const tt = document.createElement('span'); tt.className = 't'; tt.textContent = t;
+    const body = document.createElement('div'); body.textContent = txt;
+    if (extra === 'round') {
+      const hs = document.createElement('div'); hs.className = 'holes'; hs.setAttribute('aria-label', 'strokes per hole: ' + ROUND.me.join(', '));
+      ROUND.me.forEach((s, i) => { const p = ROUND.par[i], sp = document.createElement('span'); sp.textContent = s; sp.className = s === 1 ? 'a' : s < p ? 'u' : s > p ? 'o' : ''; hs.append(sp); });
+      body.append(hs);
+    }
+    li.append(tt, body); fl.append(li);
+  });
+}
+
+// § bot sketch: a small simulation (not the game's physics)
+function botSketch() {
+  const W = 200, H = 260, x = setup('c-bots'), t = TH.meadow;
+  const B = { x0: 12, y0: 12, x1: 188, y1: 248 }, R = 3.5, tee0 = [44, 222], hole0 = [150, 46];
+  const blocks = [[12, 122, 118, 14]];
+  const sandE = { cx: 156, cy: 150, rx: 20, ry: 12 };
+  function sim(ang, pow) {
+    let px = tee0[0], py = tee0[1], vx = Math.cos(ang) * pow, vy = Math.sin(ang) * pow;
+    for (let n = 0; n < 1600; n++) {
+      for (let s = 0; s < 2; s++) {
+        px += vx / 2; py += vy / 2;
+        if (px < B.x0 + R) { px = B.x0 + R; vx = -vx * 0.8; } if (px > B.x1 - R) { px = B.x1 - R; vx = -vx * 0.8; }
+        if (py < B.y0 + R) { py = B.y0 + R; vy = -vy * 0.8; } if (py > B.y1 - R) { py = B.y1 - R; vy = -vy * 0.8; }
+        for (const [X, Y, w, h] of blocks) {
+          const nx = Math.max(X, Math.min(px, X + w)), ny = Math.max(Y, Math.min(py, Y + h));
+          const dx = px - nx, dy = py - ny, d2 = dx * dx + dy * dy;
+          if (d2 < R * R) { const d = Math.sqrt(d2) || 1; const ux = dx / d, uy = dy / d; px = nx + ux * R; py = ny + uy * R; const dot = vx * ux + vy * uy; if (dot < 0) { vx -= 1.8 * dot * ux; vy -= 1.8 * dot * uy; } }
+        }
+      }
+      const sp = Math.hypot(vx, vy);
+      const hx = px - hole0[0], hy = py - hole0[1];
+      if (hx * hx + hy * hy < 25 && sp < 3.2) return { x: hole0[0], y: hole0[1], in: true };
+      const inSand = ((px - sandE.cx) / sandE.rx) ** 2 + ((py - sandE.cy) / sandE.ry) ** 2 < 1;
+      const f = inSand ? 0.93 : 0.986;
+      vx *= f; vy *= f;
+      if (sp < 0.04) break;
+    }
+    return { x: px, y: py, in: false };
+  }
+  let best = null;
+  for (let a = 0; a < 360; a += 0.5) for (let p = 1; p <= 9; p += 0.25) {
+    const r = sim(a * Math.PI / 180, p);
+    const d = Math.hypot(r.x - hole0[0], r.y - hole0[1]);
+    if (!best || d < best.d) best = { a: a * Math.PI / 180, p, d };
+  }
+  let seed = 42;
+  const rnd = () => { seed |= 0; seed = (seed + 0x6D2B79F5) | 0; let q = Math.imul(seed ^ (seed >>> 15), 1 | seed); q = (q + Math.imul(q ^ (q >>> 7), 61 | q)) ^ q; return ((q ^ (q >>> 14)) >>> 0) / 4294967296; };
+  const gauss = () => { let u = 0; for (let i = 0; i < 6; i++) u += rnd(); return u - 3; };
+  const runs = (sa, sp) => Array.from({ length: 300 }, () => sim(best.a + gauss() * sa * Math.PI / 180, best.p * (1 + gauss() * sp)));
+  const skilled = runs(1, 0.04), novice = runs(4, 0.12);
+  // draw
+  x.fillStyle = t.bg; x.fillRect(0, 0, W, H);
+  hole(x, t, [[B.x0, B.y0], [B.x1, B.y0], [B.x1, B.y1], [B.x0, B.y1]], blocks);
+  sand(x, sandE.cx, sandE.cy, sandE.rx, sandE.ry);
+  cup(x, hole0[0], hole0[1], '#e0463a', 22);
+  tee(x, tee0[0], tee0[1]);
+  const dot = (r, col) => { x.beginPath(); x.arc(r.x, r.y, 1.5, 0, Math.PI * 2); x.fillStyle = col; x.fill(); };
+  novice.forEach(r => dot(r, 'rgba(240,140,40,0.75)'));
+  skilled.forEach(r => dot(r, 'rgba(20,150,170,0.85)'));
+  ball(x, tee0[0], tee0[1]);
+  const holed = a => a.filter(r => r.in).length;
+  const near = a => a.filter(r => r.in || Math.hypot(r.x - hole0[0], r.y - hole0[1]) < 24).length;
+  const pct = (n) => Math.round(n / 3) + '%';
+  document.getElementById('botcap').innerHTML = `<b>Where first putts stop.</b> A small simulation of the test bots on a dog-leg hole, aiming for the same bank shot off the right wall. Teal: the skilled bot (aim error about 1°). Orange: the novice (about 4°). In this run, the skilled bot holed ${pct(holed(skilled))} of 300 first putts and left ${pct(near(skilled))} near the cup or in it; the novice holed ${pct(holed(novice))} and left ${pct(near(novice))} near or in.`;
+}
+
+function drawAll() { drawHoleMock(); drawCard(); }
+buildPieces(); buildWeek(); buildTables(); botSketch(); drawAll();
+if (document.fonts && document.fonts.ready) document.fonts.ready.then(drawAll);
+</script>

@@ -36,7 +36,7 @@ The status column is yours to change; Shortlisted marks the picks so far, which 
 | 12 | Sandglass Alchemy | falling-sand sandbox + puzzles | children, tinkerers | open-ended | shared creations | M | Deep dive |
 | 13 | Clockwork Crew | robot programming | logic fans, classrooms | 15+ min | solution graphs | M | Idea |
 | 14 | Hedge Witch | swarm survival | action fans | 15 min | moderate | M | Idea |
-| 15 | Pocket Links | mini golf | everyone, families | 5–10 min | Daily strokes card | S–M | Shortlisted |
+| 15 | Pocket Links | mini golf | everyone, families | 5–10 min | Daily strokes card | S–M | Parked |
 | 16 | Rootguard | tower defense | strategy fans | 15–20 min | moderate | M | Idea |
 | 17 | Who Took the Pie? | party game, one phone | groups, classrooms | 10–20 min | 4–8 players a game | S | Shortlisted |
 | 18 | Songbird Garden | music puzzle | children, music teachers | open-ended | shared songs | S–M | Idea |
@@ -191,6 +191,10 @@ Mini golf with a new generated 9-hole course every day.
 - **Depth:** the daily course, a tougher season, putters that change physics (heavy, bouncy, spin); up to 4 players on one phone.
 - **Why it could bring players:** a strokes card shares like a Wordle result; families play together.
 - **Hard part:** no impossible or trivial holes; a bot putts each hole thousands of times.
+
+Status: parked (17 Oct 2026): too many golf games already. The write-up is kept for later.
+
+Full write-up: [Pocket Links concept page](https://claude.ai/artifact/BsSeidycTkCCtfzCvHRVM9) (source: `_ideas/pocket-links.html`): course pieces, the week of grounds, modes, putters, ghost links, how holes are made, a build plan and mockups.
 
 ### 16. Rootguard
 
