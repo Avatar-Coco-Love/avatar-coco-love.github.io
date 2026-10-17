@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Projects · Cody Joshua Clements</title>
-<meta name="description" content="Free browser games: Emergent Arcade, Animal Mail Route and Foldwork. No installs, no ads.">
+<meta name="description" content="Free browser games: Emergent Arcade, Animal Mail Route and Foldwork. Plus Nexus Drift, a PC game in progress.">
 <meta property="og:title" content="Projects · Cody Joshua Clements">
-<meta property="og:description" content="Free browser games: Emergent Arcade, Animal Mail Route and Foldwork. No installs, no ads.">
+<meta property="og:description" content="Free browser games: Emergent Arcade, Animal Mail Route and Foldwork. Plus Nexus Drift, a PC game in progress.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://avatar-coco-love.github.io/">
 <meta property="og:image" content="https://avatar-coco-love.github.io/share.png?v=3">
@@ -52,6 +52,12 @@
   a:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
   .card p { margin: 0 0 10px; color: var(--muted); }
   .go { color: var(--accent); font-weight: 600; }
+  /* "Under construction" tag over a card's image. */
+  .wip {
+    position: absolute; top: 10px; left: 10px; padding: 3px 10px; border-radius: 999px;
+    background: #0b0b10; color: #ffa64f; border: 1px solid #ffa64f;
+    font-size: .75rem; font-weight: 700; letter-spacing: .05em; text-transform: uppercase;
+  }
   footer { margin-top: 28px; text-align: center; font-size: .85rem; color: var(--muted); }
   footer p { margin: 0 0 10px; }
   .call {
@@ -84,7 +90,7 @@
 <body>
 <main>
   <h1>My projects</h1>
-  <p class="intro">Free games that play in your browser. No installs, no ads.</p>
+  <p class="intro">Games I'm making. Most play free in your browser, with no installs and no ads.</p>
   <ul>
     <li class="card">
       <img class="crop-stripe" src="https://avatar-coco-love.github.io/emergent-arcade/assets/og/arcade.png" alt="">
@@ -108,6 +114,15 @@
         <h2><a href="https://avatar-coco-love.github.io/foldwork/">Foldwork</a></h2>
         <p>A paper-folding roguelike: fold the dungeon floor to solve puzzles and beat enemies. Mouse, touch or keyboard.</p>
         <span class="go" aria-hidden="true">Play →</span>
+      </div>
+    </li>
+    <li class="card">
+      <img src="https://avatar-coco-love.github.io/nexus-drift/share.png" alt="">
+      <span class="wip">Under construction</span>
+      <div class="body">
+        <h2><a href="https://avatar-coco-love.github.io/nexus-drift/">Nexus Drift</a></h2>
+        <p>A neon, geometric shooter and miner for PC: cut through procedural caves and fight swarms of shapes. Not playable yet.</p>
+        <span class="go" aria-hidden="true">Details →</span>
       </div>
     </li>
   </ul>
