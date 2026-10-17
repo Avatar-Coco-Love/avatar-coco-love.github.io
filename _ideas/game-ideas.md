@@ -44,7 +44,7 @@ The status column is yours to change; Shortlisted marks the picks so far, which 
 | 20 | Lastlight Outpost | colony sim | sim fans | 30–60 min | stories | L+ | Idea |
 | 21 | Fortune's Hand | solitaire roguelike | card fans | 20 min | daily deck, scores | M | Idea |
 | 22 | The Ferryman's Ledger | document-checking story | story fans, classrooms | 10–20 min | endings | M | Idea |
-| 23 | Belfry | sound and logic puzzle (change ringing) | puzzle fans, classrooms, bell ringers | 5–20 min | Daily Touch card, links that play a composition | M | Deep dive |
+| 23 | Belfry | sound and logic puzzle (change ringing) | puzzle fans, classrooms, bell ringers | 5–20 min | Daily Touch card, links that play a composition | M | Parked |
 
 ## Ideas 1–10
 
@@ -265,6 +265,8 @@ A puzzle game you can hear, built on English change ringing: ring a set of churc
 - **Depth:** eight towers from 3 to 8 bells (6 to 40,320 rows), tower rules (cracked rows, tired ringers, music rows), peal boards as the long-term collection.
 - **Why it could bring players:** a Daily Touch with a spoiler-free result card, links that play a composition (a whole touch fits in a short string like `x14x14x14x12`), maths and music classrooms, and a ringing community with no game of its own.
 - **Hard part:** an obscure theme; the pitch leads with the puzzle and the sound.
+
+Status: parked (17 Oct 2026). The write-up is kept for later.
 
 Full write-up with a playable four-bell demo: [Belfry concept page](https://claude.ai/artifact/Wg1Kwq3jbUS2ewdcCCWFUy) (source: `_ideas/belfry.html`): rules and terms, modes, tower rules, progression, scoring, the Daily, puzzle checking, standalone versus arcade, an 11-PR build plan, risks and open questions.
 
