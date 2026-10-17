@@ -1,0 +1,888 @@
+<title>Minute Hero</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@500;700&family=Pixelify+Sans:wght@500;700&display=swap">
+<style>
+/* Layout: one reading column (about 66ch) with figures that may run wider; pixel mockups sit in plain frames, phones in bezels. */
+:root {
+  --bg: #eff2f6;
+  --surface: #ffffff;
+  --fg: #1c2333;
+  --muted: #59627a;
+  --line: #d5dbe6;
+  --brass: #9c5c0c;
+  --teal: #1b766e;
+  --chip: #e3e8f0;
+  --bezel: #1c2333;
+  --display: "Pixelify Sans", "Courier New", monospace;
+  --body: "Atkinson Hyperlegible", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #121826; --surface: #1a2233; --fg: #e7ebf3; --muted: #9ba6bc; --line: #2d3953;
+    --brass: #e6a750; --teal: #62c9bd; --chip: #232d42; --bezel: #04060b; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #121826; --surface: #1a2233; --fg: #e7ebf3; --muted: #9ba6bc; --line: #2d3953;
+  --brass: #e6a750; --teal: #62c9bd; --chip: #232d42; --bezel: #04060b; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--fg);
+  font-family: var(--body); font-size: 17px; line-height: 1.6;
+}
+.wrap {
+  max-width: 1060px; margin: 0 auto;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 32px 72px;
+  display: grid; gap: 56px;
+}
+section { display: grid; gap: 18px; min-width: 0; }
+.col { max-width: 66ch; display: grid; gap: 14px; min-width: 0; }
+h1, h2, h3 { font-family: var(--display); font-weight: 700; text-wrap: balance; margin: 0; line-height: 1.1; }
+h1 { font-size: clamp(44px, 9vw, 84px); letter-spacing: 0.01em; }
+h2 { font-size: clamp(28px, 4.4vw, 38px); }
+h3 { font-size: 21px; font-weight: 500; }
+p { margin: 0; }
+.eyebrow { font-family: var(--mono); font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--brass); font-weight: 700; }
+.lede { font-size: 21px; line-height: 1.5; max-width: 40ch; }
+.muted { color: var(--muted); }
+.t { font-family: var(--mono); font-variant-numeric: tabular-nums; font-weight: 700; color: var(--brass); white-space: nowrap; }
+
+.hero { display: grid; gap: 22px; grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr); align-items: center; }
+@media (max-width: 820px) { .hero { grid-template-columns: minmax(0, 1fr); } }
+.facts { display: flex; flex-wrap: wrap; gap: 8px; list-style: none; padding: 0; margin: 4px 0 0; }
+.facts li { background: var(--chip); border-radius: 999px; padding: 4px 12px; font-size: 14px; }
+.facts b { font-family: var(--mono); color: var(--brass); }
+
+canvas.px { image-rendering: pixelated; image-rendering: crisp-edges; display: block; width: 100%; height: auto; max-width: 100%; }
+figure { margin: 0; display: grid; gap: 10px; min-width: 0; }
+figcaption { font-size: 15px; color: var(--muted); max-width: 62ch; }
+figcaption b { color: var(--fg); }
+.frame { border-radius: 6px; overflow: hidden; box-shadow: 0 1px 0 var(--line), 0 10px 30px -18px rgba(10, 16, 30, 0.6); }
+.phones { display: grid; grid-template-columns: repeat(2, minmax(0, 340px)); gap: 28px; justify-content: start; }
+@media (max-width: 640px) { .phones { grid-template-columns: minmax(0, 320px); } }
+.phone { background: var(--bezel); border-radius: 30px; padding: 12px 10px 14px; }
+.phone canvas { border-radius: 18px; }
+
+.three { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+@media (max-width: 760px) { .three { grid-template-columns: minmax(0, 1fr); } }
+.box { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 16px 18px; display: grid; gap: 8px; align-content: start; }
+.box ul { margin: 0; padding-left: 18px; display: grid; gap: 4px; }
+.tag { justify-self: start; font-family: var(--mono); font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; font-weight: 700; padding: 2px 8px; border-radius: 4px; }
+.tag.kept { background: var(--brass); color: var(--surface); }
+.tag.fixed { background: var(--teal); color: var(--surface); }
+.tag.reset { background: var(--chip); color: var(--muted); }
+.rule { border-left: 3px solid var(--brass); padding-left: 14px; max-width: 62ch; }
+
+.tablewrap { overflow-x: auto; min-width: 0; }
+table { border-collapse: collapse; width: 100%; min-width: 560px; font-size: 16px; }
+th, td { text-align: left; vertical-align: top; padding: 10px 12px; border-bottom: 1px solid var(--line); }
+th { font-family: var(--mono); font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+
+.regions { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 28px; align-items: start; }
+@media (max-width: 860px) { .regions { grid-template-columns: minmax(0, 1fr); } }
+.rlist { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
+.rlist li { display: grid; gap: 2px; }
+.rlist .meta { font-size: 14px; color: var(--muted); }
+
+.items { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 14px; }
+.item { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px; display: grid; grid-template-columns: 64px minmax(0, 1fr); gap: 4px 14px; align-content: start; }
+.item canvas { grid-row: span 3; width: 64px; height: 64px; background: var(--chip); border-radius: 8px; }
+.item h3 { font-size: 19px; }
+.item .where { font-size: 13px; font-family: var(--mono); color: var(--teal); }
+.item p { font-size: 15px; line-height: 1.5; }
+.minor { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px 20px; list-style: none; padding: 0; margin: 0; }
+.minor li { display: flex; gap: 10px; align-items: center; font-size: 15px; }
+.minor canvas { width: 32px; height: 32px; flex: none; }
+
+.lives { display: grid; gap: 12px; list-style: none; padding: 0; margin: 0; }
+.life { display: grid; grid-template-columns: 78px minmax(0, 1fr); gap: 4px 16px; align-items: start; }
+.life .n { font-family: var(--mono); font-weight: 700; font-size: 14px; padding-top: 2px; }
+.bar { position: relative; height: 10px; border-radius: 5px; background: var(--chip); margin: 6px 0 4px; }
+.bar .used { position: absolute; inset: 0 auto 0 0; background: color-mix(in srgb, var(--teal) 35%, transparent); border-radius: 5px; }
+.bar .ev { position: absolute; top: -4px; width: 4px; height: 18px; border-radius: 2px; background: var(--brass); transform: translateX(-2px); }
+.life p { font-size: 16px; }
+.life.home .n { color: var(--teal); }
+.axis { display: grid; grid-template-columns: 78px minmax(0, 1fr); gap: 16px; font-family: var(--mono); font-size: 12px; color: var(--muted); }
+.axis div:last-child { display: flex; justify-content: space-between; }
+
+.two { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 28px; align-items: start; }
+@media (max-width: 760px) { .two { grid-template-columns: minmax(0, 1fr); } }
+ol.plan, ul.plain { margin: 0; padding-left: 22px; display: grid; gap: 8px; max-width: 66ch; }
+.calm li::marker { color: var(--teal); }
+kbd { font-family: var(--mono); font-size: 13px; background: var(--chip); border: 1px solid var(--line); border-bottom-width: 2px; border-radius: 4px; padding: 0 5px; }
+.foot { font-size: 14px; color: var(--muted); border-top: 1px solid var(--line); padding-top: 16px; }
+a { color: var(--teal); }
+a:focus-visible { outline: 2px solid var(--brass); outline-offset: 2px; }
+</style>
+
+<div class="wrap">
+
+<header class="hero">
+  <div class="col">
+    <p class="eyebrow">Idea D · top-down adventure · concept</p>
+    <h1>Minute Hero</h1>
+    <p class="lede">A small adventure played one minute at a time. A curse gives you sixty seconds per life. Each life you get a little further, and whatever you fix stays fixed.</p>
+    <ul class="facts">
+      <li><b>60 s</b> lives</li>
+      <li><b>~40</b> screens</li>
+      <li><b>8</b> tools</li>
+      <li><b>12</b> Hours to bring home</li>
+      <li>phones and PCs</li>
+    </ul>
+  </div>
+  <figure>
+    <div class="frame"><canvas class="px" id="c-key" width="256" height="144" aria-label="Key art: Pip on the path below Tickhollow's clock tower at dawn; the Magpie flies off with the bell's clapper; the clock reads 11:59."></canvas></div>
+    <figcaption>Key art mockup. The tower clock reads 11:59 and the Magpie is flying off with the bell's clapper.</figcaption>
+  </figure>
+</header>
+
+<section>
+  <div class="col">
+    <h2>The idea in full</h2>
+    <p>Pip is the apprentice bell-ringer of Tickhollow, a valley that keeps time by the great bell in its clock tower. One night the Magpie steals the bell's clapper, and the valley's hours go with it. Since then Tickhollow lives one minute at a time. Every sixty seconds the valley rewinds to the same morning minute and everyone forgets. Pip is the only one who remembers.</p>
+    <p>When the minute runs out, Pip wakes in the Still House, the bell-ringer's cottage. Its grandfather clock stopped at 11:59, and the curse can't get in. There is no timer at home. You look at the map, read your notes, pet the cat, and step out of the door when you're ready.</p>
+    <p>The world remembers what Pip changes. A gate you unbar stays open, a bridge you lower stays down, and a key in your pocket stays there. So each life is a short trip with one job: dig up the key in the dunes, light the sundial at the shore, find out where the ferry goes. Running out of time costs you nothing but your place on the map.</p>
+    <p>The goal is to bring back the twelve Hours the Magpie scattered across the valley, mend the bell, and ring it to call the Magpie down from the Roost at the top of the tower.</p>
+  </div>
+  <div class="col">
+    <h3>What it adds to Minit</h3>
+    <p>The idea comes from Minit (2018): a cursed sword, sixty-second lives and a tiny black-and-white world. Minute Hero keeps that core and adds three things.</p>
+    <ul class="plain">
+      <li><b>The minute has a schedule.</b> The valley replays the same sixty seconds every life, so things happen at set times: the ferry always leaves at <span class="t">0:35</span>. Learning the schedule is part of the puzzle, a small version of Majora's Mask.</li>
+      <li><b>A calm home with a memory.</b> The Still House has no clock, a map you can pin notes on, and the trail of your last three lives.</li>
+      <li><b>Color, hats and gentler settings.</b> A warm palette, fourteen hats to find, and a longer-minute option for young players.</li>
+    </ul>
+  </div>
+</section>
+
+<section>
+  <h2>Playing a life</h2>
+  <div class="phones">
+    <figure>
+      <div class="phone"><canvas class="px" id="c-life" width="160" height="288" aria-label="Phone mockup of a life in progress at 23 seconds left, in Pocketwood. A teal footprint trail from the last life leads to a cracked wall."></canvas></div>
+      <figcaption><b>23 seconds left, Pocketwood.</b> The watch ring top left empties as the minute goes. Teal footprints are your last life: it ran out at that cracked wall, so this life brings the boots.</figcaption>
+    </figure>
+    <figure>
+      <div class="phone"><canvas class="px" id="c-end" width="160" height="288" aria-label="Phone mockup of the end-of-life card: life 25, kept the shovel, fixed the mine gate, saw the ferry leave at 0:35."></canvas></div>
+      <figcaption><b>Time's up.</b> A soft chime and a card listing what this life kept, fixed and saw. Then a short sweep back to the Still House.</figcaption>
+    </figure>
+  </div>
+</section>
+
+<section>
+  <div class="col">
+    <h2>The sixty-second rule</h2>
+    <p>Every thing in the game is in one of three groups, and the player can always tell which.</p>
+  </div>
+  <div class="three">
+    <div class="box">
+      <span class="tag kept">Kept</span>
+      <p>In your pockets, forever.</p>
+      <ul><li>tools</li><li>keys</li><li>the Hours</li><li>heart pieces</li><li>hats</li><li>notes and schedule lines</li></ul>
+    </div>
+    <div class="box">
+      <span class="tag fixed">Fixed</span>
+      <p>Changes to the world that stay.</p>
+      <ul><li>opened gates and doors</li><li>lowered bridges and ladders</li><li>lit sundials and lantern posts</li><li>dug tunnels</li><li>broken walls</li></ul>
+    </div>
+    <div class="box">
+      <span class="tag reset">Reset</span>
+      <p>The minute's clockwork, back each life.</p>
+      <ul><li>enemies</li><li>pushed crates</li><li>switches and timed doors</li><li>your hearts</li><li>things you carry (a pie, a bucket)</li><li>where people stand</li></ul>
+    </div>
+  </div>
+  <p class="rule">The rule for building it: if the player worked for it, it stays. If it belongs to the minute, it resets. Losing all your hearts ends the life early, which is the same as running out of time, just sooner.</p>
+  <div class="col">
+    <h3>Sundials</h3>
+    <p>Each region has a sundial. Light it once and you can start any later life there. This is how the world reaches past a sixty-second walk from home: the far edge of the map is a minute from the nearest sundial, not from the Still House.</p>
+  </div>
+</section>
+
+<section>
+  <div class="col">
+    <h2>The minute's schedule</h2>
+    <p>The valley runs the same minute every life. Events start at fixed seconds, counted from the moment you step out. The notebook in the Still House adds a line the first time you see one happen; the rest show as <span class="t">?:??</span>.</p>
+  </div>
+  <div class="tablewrap">
+    <table>
+      <thead><tr><th>Time</th><th>What happens</th><th>Why it matters</th></tr></thead>
+      <tbody>
+        <tr><td class="t">0:10</td><td>The baker opens her window and sets a pie on the sill.</td><td>The mine guard lets you past for a pie, long before you find the gate key.</td></tr>
+        <tr><td class="t">0:20</td><td>The lock-keeper lowers the river bridge for fifteen seconds.</td><td>The quick way to Windmill Rise, until you fix the bridge down for good.</td></tr>
+        <tr><td class="t">0:30</td><td>The scarecrow on Windmill Rise turns to face east.</td><td>The crows on the field path follow his gaze, so the path is clear while he's turned.</td></tr>
+        <tr><td class="t">0:35</td><td>The ferry leaves for Gull Rock.</td><td>The only way to the island until you have the swim fins.</td></tr>
+        <tr><td class="t">0:42</td><td>The tide in the pools drops for ten seconds.</td><td>A cave mouth on the shore is dry long enough to run in.</td></tr>
+        <tr><td class="t">0:48</td><td>The Magpie flies low over the square.</td><td>Pull the bell rope as it passes and it drops what it's carrying.</td></tr>
+        <tr><td class="t">0:55</td><td>The lighthouse lamp comes on.</td><td>For five seconds the dark cove is lit and its secret door shows.</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section>
+  <h2>The world</h2>
+  <div class="regions">
+    <figure>
+      <div class="frame"><canvas class="px" id="c-map" width="256" height="160" aria-label="Mockup of the map wall: the valley's six regions with sundials and pins, three teal trails from recent lives, and a notebook page listing schedule times."></canvas></div>
+      <figcaption><b>The map wall and notebook</b> in the Still House. Yellow sundials are lit, grey ones not yet. Red pins are your own notes. The three teal lines are your last three lives, fading with age.</figcaption>
+    </figure>
+    <ul class="rlist">
+      <li><h3>Tickhollow</h3><span>Home. The Still House, the market square, the well and the locked clock tower.</span><span class="meta">Twig Sword · 1 Hour, at the bottom of the well</span></li>
+      <li><h3>Pocketwood</h3><span>East. Hedges to cut, beetles, an old shrine and a hat stuck in a tree.</span><span class="meta">Clockwork Boots · 2 Hours</span></li>
+      <li><h3>Saltglass Shore</h3><span>South. Dunes full of dig spots, tide pools, the lighthouse and the ferry dock.</span><span class="meta">Shovel, Swim Fins · 2 Hours</span></li>
+      <li><h3>Rattle Mines</h3><span>North. Dark tunnels and a mine-cart line that becomes a fast way home.</span><span class="meta">Lantern · 2 Hours</span></li>
+      <li><h3>Windmill Rise</h3><span>West. Fields, the turning scarecrow, and gusts that push you about.</span><span class="meta">Hook-Line · 2 Hours</span></li>
+      <li><h3>Gull Rock</h3><span>An island off the shore, reached by the <span class="t">0:35</span> ferry or by swimming.</span><span class="meta">Stillstone · 2 Hours</span></li>
+      <li><h3>The Roost</h3><span>The top of the clock tower, opened by ringing the mended bell. A climb against the clock, then the Magpie.</span><span class="meta">Echo Bell · the last Hour</span></li>
+    </ul>
+  </div>
+  <div class="col">
+    <p>Each Hour sits at the end of a short dungeon or a hard secret. Dungeons are small on purpose: once you know the way and have opened its shortcuts, one fits in a minute. The first time through takes several lives, and each life opens one more door inside it.</p>
+  </div>
+</section>
+
+<section>
+  <div class="col">
+    <h2>Tools</h2>
+    <p>Each tool opens new places and also makes old routes faster, so the same minute reaches further as the game goes on.</p>
+  </div>
+  <div class="items" id="items"></div>
+  <div class="col">
+    <h3>Other things you keep</h3>
+  </div>
+  <ul class="minor" id="minor"></ul>
+</section>
+
+<section>
+  <h2>Home: the Still House</h2>
+  <figure>
+    <div class="frame"><canvas class="px" id="c-hub" width="256" height="160" aria-label="Mockup of the Still House: a stopped grandfather clock, the map wall, a shelf of twelve Hour bells with three lit, a hat rack, the cat on a rug, and a menu to choose where the next life starts."></canvas></div>
+    <figcaption>The grandfather clock is stopped at 11:59. The shelf holds the Hours you've brought home (3 of 12 here), the rack holds your hats, and the cat gives a hint if you've had five lives in a row with nothing new. Walk to the door to choose where the next life starts.</figcaption>
+  </figure>
+</section>
+
+<section>
+  <div class="col">
+    <h2>How a session feels</h2>
+    <p>A nine-minute bus ride, a few hours into the game. Each bar is one life, sixty seconds wide. The shaded part is how long it lasted, and the brass mark is the moment that mattered.</p>
+  </div>
+  <div class="axis" aria-hidden="true"><div></div><div><span>0:00</span><span>0:30</span><span>0:60</span></div></div>
+  <ol class="lives" id="lives"></ol>
+  <p class="rule">Six lives, about nine minutes: a key, a sundial, a schedule line, a heart piece and a hat. Every minute ended with something.</p>
+  <div class="col">
+    <h3>The first ten minutes</h3>
+    <p>Life one has no warning. Pip wakes, wanders the square, and at the minute collapses and wakes in bed again. The watch ring appears on the second life, once you've seen it happen. By life four you have the Twig Sword from the market; by life seven you have cut into Pocketwood and lit its sundial; around life nine the first Hour comes up out of the well. A new player should understand the minute, the schedule and sundials inside ten minutes.</p>
+  </div>
+</section>
+
+<section>
+  <div class="col">
+    <h2>Keeping the clock calm</h2>
+    <p>The timer is the hook and also the biggest risk: it can make the game feel stressful. Everything here is meant to make the minute feel like a measuring stick.</p>
+  </div>
+  <ul class="plain calm">
+    <li>Home has no clock. Menus, the map and dialogue all stop the timer, so reading speed never costs time.</li>
+    <li>The last ten seconds tick softly and the watch ring turns warm orange. No alarm, no red flash.</li>
+    <li>The end of a life is a chime and a summary card, never the words "game over".</li>
+    <li>Every goal has a route of 45 seconds or less, checked by a test bot, so a good route always leaves slack.</li>
+    <li>After five lives in a row with nothing new, the cat offers a hint. You can ignore it.</li>
+    <li>An assist setting gives longer minutes (75, 90 or 120 seconds) for young players. Daily results show which setting was used.</li>
+    <li>With reduced motion on, the end-of-life sweep becomes a plain fade.</li>
+  </ul>
+</section>
+
+<section>
+  <div class="two">
+    <div class="col">
+      <h2>How it spreads</h2>
+      <p><b>The Daily Minute.</b> Once a day everyone gets the same tiny seeded map and one life to collect as many coins as they can. The result card draws your route as a line, so two friends can compare their paths at a glance.</p>
+      <p><b>Lives as the score.</b> Finishing the game says "Finished in 143 lives". A low number is a speedrun goal anyone can understand.</p>
+      <p><b>Clip-sized.</b> A whole life fits in a sixty-second video.</p>
+    </div>
+    <figure>
+      <div class="frame" style="max-width: 320px"><canvas class="px" id="c-daily" width="160" height="200" aria-label="Mockup of a Daily Minute result card: 17 Oct, a small map with a teal route line, 14 of 20 coins."></canvas></div>
+      <figcaption>Daily Minute result card mockup.</figcaption>
+    </figure>
+  </div>
+</section>
+
+<section>
+  <div class="two">
+    <div class="col">
+      <h2>Controls</h2>
+      <p><b>Phone:</b> a floating joystick under the left thumb. On the right, a big sword button and a smaller tool button; tap the tool icon to swap tools. The boots wind up while you hold the tool button and dash when you let go.</p>
+      <p><b>PC:</b> arrow keys or <kbd>WASD</kbd> to move, <kbd>J</kbd> or <kbd>Z</kbd> for the sword, <kbd>K</kbd> or <kbd>X</kbd> for the tool, <kbd>Tab</kbd> to swap, <kbd>M</kbd> for the map. A game controller works too.</p>
+      <p><b>Look:</b> 16 × 16 pixel tiles and one fixed palette, all drawn in code, every sound synthesized, the same rules as Foldwork. The mockups on this page are drawn that way.</p>
+    </div>
+    <div class="col">
+      <h2>Size and a first slice</h2>
+      <p>The smallest of the six adventure ideas: about 40 screens, close to Minit's size. It builds on the "start small, built to grow" foundations in the ideas file and adds two pieces:</p>
+      <ul class="plain">
+        <li><b>The schedule as data:</b> events keyed to seconds, so timings live in one table.</li>
+        <li><b>A timed reachability check:</b> a bot finds the fastest route to every goal from each sundial, using only the tools you could have by then, and fails if any goal needs more than 45 seconds. When a timing changes, this catches the puzzles it breaks.</li>
+      </ul>
+    </div>
+  </div>
+  <ol class="plan">
+    <li>Engine, the minute timer, the Still House and saves.</li>
+    <li>Sword, hearts, beetles and the end-of-life card.</li>
+    <li>Tickhollow and Pocketwood (about 12 screens), the baker and bridge events, the first sundial.</li>
+    <li>Clockwork Boots, the Well dungeon and the first Hour.</li>
+    <li>Map wall, notebook, the timed reachability check, sound, and a phone playtest.</li>
+  </ol>
+  <p class="col">After those five PRs: about 20 to 30 minutes of play (around 25 lives) and 2 of the 12 Hours. The rest is mostly new data.</p>
+</section>
+
+<section>
+  <div class="col">
+    <h2>Risks</h2>
+  </div>
+  <ul class="plain">
+    <li><b>Brittle timing.</b> Moving one event by two seconds can break a puzzle elsewhere. The timed check exists for this.</li>
+    <li><b>Repetition.</b> Walking the same first ten seconds every life gets dull. Sundials, dug tunnels and the mine cart are there to cut it.</li>
+    <li><b>Dash precision on phones.</b> The boots need a forgiving aim (snap to eight directions) and a playtest early.</li>
+    <li><b>Too close to Minit.</b> The schedule, the hub and the color are what keep it its own game; they should all be in the first slice.</li>
+  </ul>
+</section>
+
+<section>
+  <div class="col">
+    <h2>Open questions for you</h2>
+  </div>
+  <ol class="plan">
+    <li><b>The hero.</b> Pip the bell-ringer's apprentice, or someone else (a fox, a mouse, a robot)?</li>
+    <li><b>Dialogue stops the timer.</b> I recommend yes. Minit didn't, and it punished slow readers.</li>
+    <li><b>The Echo Bell.</b> In the final dungeon, or saved for later? It's the most complex item to build and test.</li>
+    <li><b>Sprites.</b> Stored as text in the code (the Foldwork rule) or as small image files?</li>
+    <li><b>Where it lives.</b> Standalone like Foldwork is my pick: an adventure doesn't fit one arcade file. The Daily Minute alone could become an arcade game later.</li>
+  </ol>
+</section>
+
+<p class="foot">Concept for idea D in <code>_ideas/game-ideas.md</code>, written 17 Oct 2026. Every picture is a mockup drawn in code, not a screenshot of a build.</p>
+
+</div>
+
+<script>
+// § palette and pixel helpers
+const C = {
+  k: '#1b1f2e', d: '#2a3150', w: '#f6f2e4', m: '#e3d4ae', g: '#5aa457', G: '#3b7a47', l: '#9bd16a',
+  b: '#6b4630', B: '#9a6c44', s: '#f1c9a0', S: '#c8955f', r: '#d8504a', R: '#9c2f35',
+  o: '#e8a03a', y: '#f7da5e', u: '#3a74c0', U: '#6eaee6', n: '#2d4180', p: '#7d5bc4', P: '#b190ec',
+  e: '#9aa1b0', E: '#636a7c', t: '#5ad1c0', a: '#d7b07a', A: '#bf9460', z: '#efd9a0', Z: '#d8bd7c',
+};
+function hh(a, b, c = 0) {
+  let h = (Math.imul(a | 0, 374761393) + Math.imul(b | 0, 668265263) + Math.imul(c | 0, 1442695041)) | 0;
+  h = Math.imul(h ^ (h >>> 13), 1274126177); h ^= h >>> 16;
+  return (h >>> 0) / 4294967296;
+}
+function rect(x, c, X, Y, w, h) { x.fillStyle = C[c] || c; x.fillRect(X, Y, w, h); }
+function spr(x, rows, X, Y, o = {}) {
+  const s = o.scale || 1;
+  for (let j = 0; j < rows.length; j++) {
+    const row = rows[j];
+    for (let i = 0; i < row.length; i++) {
+      const ch = row[i];
+      if (ch === '.') continue;
+      const col = o.tint ? (ch === 'k' ? o.tintDark : o.tint) : C[ch];
+      if (!col) continue;
+      x.fillStyle = col;
+      x.fillRect(X + (o.flip ? row.length - 1 - i : i) * s, Y + j * s, s, s);
+    }
+  }
+}
+function disc(x, c, cx, cy, r) {
+  for (let j = -r; j <= r; j++) for (let i = -r; i <= r; i++) if (i * i + j * j <= r * r + r * 0.6) rect(x, c, cx + i, cy + j, 1, 1);
+}
+function ring(x, c, cx, cy, r, frac = 1, empty) {
+  for (let j = -r; j <= r; j++) for (let i = -r; i <= r; i++) {
+    const d = Math.sqrt(i * i + j * j);
+    if (d > r + 0.3 || d < r - 2.2) continue;
+    let ang = Math.atan2(i, -j); if (ang < 0) ang += Math.PI * 2;
+    rect(x, ang / (Math.PI * 2) <= frac ? c : empty, cx + i, cy + j, 1, 1);
+  }
+}
+function line(x, c, x0, y0, x1, y1) {
+  const dx = Math.abs(x1 - x0), dy = -Math.abs(y1 - y0), sx = x0 < x1 ? 1 : -1, sy = y0 < y1 ? 1 : -1;
+  let err = dx + dy;
+  for (;;) { rect(x, c, x0, y0, 1, 1); if (x0 === x1 && y0 === y1) break; const e2 = 2 * err; if (e2 >= dy) { err += dy; x0 += sx; } if (e2 <= dx) { err += dx; y0 += sy; } }
+}
+
+// § 3x5 pixel font
+const F = {
+  A:'010101111101101',B:'110101110101110',C:'011100100100011',D:'110101101101110',E:'111100110100111',F:'111100110100100',
+  G:'011100101101011',H:'101101111101101',I:'111010010010111',J:'001001001101010',K:'101101110101101',L:'100100100100111',
+  M:'101111111101101',N:'110101101101101',O:'010101101101010',P:'110101110100100',Q:'010101101110011',R:'110101110101101',
+  S:'011100010001110',T:'111010010010010',U:'101101101101111',V:'101101101101010',W:'101101111111101',X:'101101010101101',
+  Y:'101101010010010',Z:'111001010100111','0':'111101101101111','1':'010110010010111','2':'110001010100111',
+  '3':'110001010001110','4':'101101111001001','5':'111100110001110','6':'011100111101111','7':'111001010010010',
+  '8':'111101111101111','9':'111101111001110',':':'000010000010000','.':'000000000000010','!':'010010010000010',
+  '?':'110001010000010','-':'000000111000000','+':'000010111010000','/':'001001010100100',"'":'010010000000000',
+  ',':'000000000010100','>':'100010001010100','(':'010100100100010',')':'010001001001010','*':'000101010101000',
+};
+function text(x, str, X, Y, col, s = 1, shadow) {
+  str = str.toUpperCase();
+  for (let n = 0; n < str.length; n++) {
+    const g = F[str[n]];
+    if (g) for (let k = 0; k < 15; k++) if (g[k] === '1') {
+      const px = X + (n * 4 + (k % 3)) * s, py = Y + ((k / 3) | 0) * s;
+      if (shadow) rect(x, shadow, px + s, py + s, s, s);
+      rect(x, col, px, py, s, s);
+    }
+  }
+}
+const tw = (str, s = 1) => (str.length * 4 - 1) * s;
+
+// § sprites (16x16 unless noted)
+const S_HERO = [
+  '................','.....kkkkkk.....','....kbbbbbbk....','...kbbbbbbbbk...','...kbbssssbbk...','...kssssssssk...',
+  '...kssksskssk...','...kssssssssk...','....kssssssk....','...krrrrrrrrk...','..knrrrrrrrrnk..','..ksnnnnnnnnsk..',
+  '..ksnnnoonnnsk..','...knnnnnnnnk...','....kbbkkbbk....','.....kk..kk.....',
+];
+const S_TREE = [
+  '.....kkkkkk.....','...kkGgggggGkk..','..kGgglllggggGk.','.kGggllggggggGGk','.kGgllgggggggGGk','kGggggggglgggGGk',
+  'kGgggggggggggGGk','kGGggggggggggGGk','kGGgggggggggGGGk','.kGGGggggggGGGk.','.kkGGGGGGGGGGkk.','...kkkGGGGkkk...',
+  '......kbbk......','......kbbk......','.....kbbbbk.....','................',
+];
+const S_BUSH = [
+  '................','................','................','....kkk..kkk....','...klllkkgllk...','..kgllgggggglk..',
+  '..kggggggggglk..','.kgglggggglgggk.','.kgggggggggggGk.','.kGgggggggggGGk.','..kGGGGGGGGGGk..','...kkkkkkkkkk...',
+  '................','................','................','................',
+];
+const S_ROCK = [
+  '................','................','................','................','......kkkk......','....kkeeeekk....',
+  '...keewweeeek...','...kewweeeeEk...','..keeeeeeeeEEk..','..keeeeeeeEEEk..','..kEeeeeeEEEEk..','...kEEEEEEEEk...',
+  '....kkkkkkkk....','................','................','................',
+];
+const S_BEETLE = [
+  '................','................','......k..k......','.......kk.......','.....kEEEEk.....','..k.kPppppPk.k..',
+  '...kPPppkppPPk..','.k.kpppkkpppk.k.','..kppppkkppppk..','.k.kpppkkpppk.k.','...kppppkppppk..','....kppkkppk....',
+  '.....kk..kk.....','................','................','................',
+];
+const S_CHEST = [
+  '................','................','................','..kkkkkkkkkkkk..','.kBBBBBBBBBBBBk.','.kBbbbbbbbbbbBk.',
+  '.kooooooooooook.','.kBBBBBkkBBBBBk.','.kBBBBkyykBBBBk.','.kBbbbbkkbbbbBk.','.kBBBBBBBBBBBBk.','.kbbbbbbbbbbbbk.',
+  '..kkkkkkkkkkkk..','................','................','................',
+];
+const S_CAT = [
+  '................','................','................','................','................','..k...k.........',
+  '..kk.kk.........','..kokoko........','.kooooook.......','.kokoookk...kk..','.kooooooookkook.','..kooooooooook..',
+  '..kwoooooooook..','..kwwoooooook...','...kkkkkkkkk....','................',
+];
+const S_BAKER = [
+  '....kkkkkkk.....','...kwwwwwwwk....','...kwwwwwwwk....','....kkkkkkk.....','...kssssssssk...','...kssksskssk...',
+  '...kssssssssk...','....kssrssk.....','...kwwwwwwwwk...','..kswwwwwwwwsk..','..kswwwwwwwwsk..','...kwwwwwwwwk...',
+  '...kwwwwwwwwk...','....kbbkkbbk....','.....kk..kk.....','................',
+];
+const S_MAGPIE = [
+  '..........kk....','.........kkkk...','........kkwkk...','.kkk...kkkkkoo..','kkwwkkkkwwwk....','.kwwwwwwwwk.....',
+  '..kkkwwwkk......','....kkkk.k......','.........o......','........ooo.....','........ooo.....',
+];
+
+// § item icons
+const I = {
+  sword: ['............kk..','...........kwek.','..........kwek..','.........kwek...','........kwek....','.......kwek.....','..kk..kwek......','..koskwek.......','...kooek........','....kook........','...kbkkok.......','..kbk...kk......','.kbk............','.kk.............','................','................'],
+  lantern: ['......kkkk......','.....k....k.....','......kkkk......','....kooooook....','...kkkkkkkkkk...','...kwyyyyyywk...','...kwyyooyywk...','...kwyoyyoywk...','...kwyyooyywk...','...kwyyyyyywk...','...kkkkkkkkkk...','....kooooook....','.....kkkkkk.....','................','................','................'],
+  shovel: ['.......kkk......','......kbbbk.....','.......kbk......','.......kbk......','.......kbk......','.......kbk......','.......kbk......','.......kbk......','.....kkkokkk....','....keeeeeeek...','....keweeeeek...','....keweeeeek...','....keeeeeeek...','.....keeeeek....','......keeek.....','.......kkk......'],
+  boots: ['................','................','.....kkkk.......','....kBBBBk.kk...','....kBbbBk.kok..','....kBBBBkkooo..','....kBbbBk.kok..','....kBBBBk..k...','....kBBBBk......','...kBBBBBBkkk...','..kBBBBBBBBBBk..','..kBBBBBBBBBBk..','..kbbbbbbbbbbk..','...kkkkkkkkkk...','................','................'],
+  hook: ['................','.....kkkk.......','....keeeek......','...kek..kek.....','...kek...kk.....','...kek..........','....kek...kk....','.....keekkek....','......keeek.....','.......kBk......','......kBk.......','....kkBBBkk.....','...kBBkkkBBk....','...kBk...kBk....','...kBBkkkBBk....','....kkBBBkk.....'],
+  fins: ['................','................','..kkk.....kkk...','.kUUUk...kUUUk..','.kUuUk...kUuUk..','.kUuUk...kUuUk..','kUuuuUk.kUuuuUk.','kUuuuUk.kUuuuUk.','kUuUuUk.kUuUuUk.','kUuUuUk.kUuUuUk.','kUUUUUk.kUUUUUk.','.kkkkk...kkkkk..','................','................','................','................'],
+  stillstone: ['................','................','.....kkkkkk.....','...kkttttttkk...','..kttwwtttttk...','..ktwwttktttk...','.kttwttkttttk...','.kttttttkkktk...','.ktttttttttttk..','.kttttttttttEk..','..kttttttttEk...','..kkttttttEkk...','....kkkkkkk.....','................','................','................'],
+  echo: ['................','.......kk.......','......kook......','.....kyyyok.....','....kyyyyyok....','....kyyyyyok....','...kyyyyyyyok...','...kyyyyyyyok...','..kyyyyyyyyyok..','..koooooooooook.','...kkkkkkkkkkk..','......koook.....','.t.....kkk....t.','t.t..........t.t','................','................'],
+  key: ['................','................','....kkkk........','...kyyyyk.......','..kyykkyyk......','..kyk..kyk......','..kyykkyyk......','...kyyyyk.......','....kyyk........','....kyyk........','....kyyykk......','....kyyyyk......','....kyyk........','....kyyykk......','....kyyyyk......','.....kkkk.......'],
+  heart: ['................','................','................','..kkk...kkk.....','.krrrk.krrrk....','krwrrrkrrrrrk...','krwrrrrrrrrrk...','krrrrrrrrrrrk...','.krrrrrrrrrk....','..krrrrrrrk.....','...krrrrrk......','....krrrk.......','.....krk........','......k.........','................','................'],
+  hour: ['................','.......kk.......','......kyyk......','.....kywyyk.....','....kyywyyyk....','....kyyyyyyk....','...kyyyyyyyyk...','...kyyyyyyyyk...','..kyyyyyyyyyyk..','..kooooooooook..','...kkkkkkkkkk...','.......kok......','........k.......','................','................','................'],
+  hat: ['................','................','................','................','......kkkk......','.....krrrrk.....','....krrrrrrk....','....krrwwrrk....','....krrrrrrk....','..kkkkkkkkkkkk..','.krrrrrrrrrrRRk.','..kkkkkkkkkkkk..','................','................','................','................'],
+  note: ['................','...kkkkkkkkk....','...kmmmmmmmmk...','...kmkkkkkmmk...','...kmmmmmmmmk...','...kmkkkkkkmk...','...kmmmmmmmmk...','...kmkkkkmmmk...','...kmmmmmmmmk...','...kmkkkkkkmk...','...kmmmmmmmmk...','...kmmmmmrrmk...','...kmmmmmrrmk...','...kkkkkkkkkk...','................','................'],
+};
+
+// § tiles
+function tile(x, t, cx, cy, ox = 0, oy = 0) {
+  const X = ox + cx * 16, Y = oy + cy * 16;
+  const R = (c, a, b, w, h) => rect(x, c, X + a, Y + b, w, h);
+  const specks = (base, c1, c2, n) => {
+    R(base, 0, 0, 16, 16);
+    for (let i = 0; i < n; i++) { const a = (hh(cx, cy, i) * 15) | 0, b = (hh(cy + 7, cx, i + 9) * 14) | 0; R(i % 2 ? c1 : c2, a, b, 1, i % 3 ? 2 : 1); }
+  };
+  switch (t) {
+    case 'w': {
+      R('u', 0, 0, 16, 16);
+      for (let i = 0; i < 3; i++) { const a = (hh(cx, cy, i) * 11) | 0, b = (hh(cy, cx, i + 3) * 14) | 0; R('U', a, b, 4, 1); }
+      break;
+    }
+    case 'p': specks('a', 'A', 'z', 6); break;
+    case 'n': specks('z', 'Z', 'w', 5); break;
+    case 's': case 'c': {
+      R('E', 0, 0, 16, 16);
+      for (let r = 0; r < 4; r++) for (let q = -1; q < 2; q++) { const bx = q * 8 + (r % 2 ? 4 : 0); R('e', bx + 1, r * 4 + 1, 6, 2); }
+      if (t === 'c') { line(x, 'k', X + 9, Y + 1, X + 6, Y + 6); line(x, 'k', X + 6, Y + 6, X + 10, Y + 10); line(x, 'k', X + 10, Y + 10, X + 7, Y + 15); line(x, 'k', X + 6, Y + 6, X + 3, Y + 8); }
+      break;
+    }
+    case '=': {
+      R('u', 0, 0, 16, 16);
+      for (let i = 0; i < 4; i++) { R('B', i * 4, 1, 3, 14); R('b', i * 4 + 3, 1, 1, 14); }
+      R('k', 0, 0, 16, 1); R('k', 0, 15, 16, 1);
+      break;
+    }
+    default: {
+      specks('g', 'l', 'G', 6);
+      if (t === 'f') { const a = 3 + ((hh(cx, cy, 5) * 8) | 0), b = 3 + ((hh(cx, cy, 6) * 8) | 0); R('w', a, b, 1, 1); R('w', a + 2, b, 1, 1); R('w', a + 1, b - 1, 1, 1); R('w', a + 1, b + 1, 1, 1); R('y', a + 1, b, 1, 1); R('y', a + 6, b + 4, 1, 1); }
+    }
+  }
+}
+function drawMap(x, rows, ox, oy) {
+  rows.forEach((row, cy) => [...row].forEach((t, cx) => tile(x, t, cx, cy, ox, oy)));
+  rows.forEach((row, cy) => [...row].forEach((t, cx) => {
+    const X = ox + cx * 16, Y = oy + cy * 16;
+    if (t === 'T') spr(x, S_TREE, X, Y);
+    if (t === 'b') spr(x, S_BUSH, X, Y);
+    if (t === 'r') spr(x, S_ROCK, X, Y);
+  }));
+}
+
+// § scene: Pocketwood (shared by both phone mockups)
+const WOOD = [
+  'TTssscssTT',
+  'TgggpgggfT',
+  'TfgppgbbgT',
+  'TbbpgggggT',
+  'TggpgfgrgT',
+  'TgppggwwwT',
+  'TgpgggwwwT',
+  'Tgpggg=wwT',
+  'TgppggggfT',
+  'TggpgbbggT',
+  'TTgpggTTTT',
+];
+const TRAIL = [[3.4, 10.6], [3.2, 9.6], [2.6, 8.7], [2.4, 7.7], [2.5, 6.7], [2.7, 5.7], [3.2, 4.8], [3.4, 3.8], [3.9, 2.9], [4.5, 2.1], [5.1, 1.4]];
+function wood(x, oy) {
+  drawMap(x, WOOD, 0, oy);
+  x.globalAlpha = 0.9;
+  TRAIL.forEach(([cx, cy], i) => { const X = (cx * 16) | 0, Y = (oy + cy * 16) | 0; rect(x, 't', X + (i % 2 ? 3 : 0), Y, 2, 3); });
+  x.globalAlpha = 0.45;
+  spr(x, S_HERO, 84, oy + 12, { tint: C.t, tintDark: '#1f6f66' });
+  x.globalAlpha = 1;
+  spr(x, S_CHEST, 128, oy + 16 * 4);
+  spr(x, S_BEETLE, 74, oy + 16 * 3 + 6);
+  spr(x, S_BEETLE, 96, oy + 16 * 8 + 4, { flip: true });
+  spr(x, S_HERO, 40, oy + 16 * 6 + 2);
+}
+function hud(x, left, life) {
+  rect(x, 'k', 0, 0, 160, 20);
+  ring(x, left > 10 ? 'y' : 'o', 10, 10, 7, left / 60, 'd');
+  text(x, String(left), left > 9 ? 21 : 23, 8, left > 10 ? C.w : C.o);
+  for (let i = 0; i < 3; i++) spr(x, I.heart, 34 + i * 11, 2, { scale: 1 });
+  spr(x, I.hour, 104, 2);
+  text(x, '3/12', 120, 8, C.y);
+  text(x, 'LIFE ' + life, 140 - tw('LIFE ' + life) + 18, 15, C.e);
+}
+function controls(x, oy, item) {
+  rect(x, 'k', 0, oy, 160, 288 - oy);
+  rect(x, 'd', 0, oy, 160, 1);
+  ring(x, 'E', 38, oy + 46, 24, 1, 'E');
+  disc(x, 'd', 38, oy + 46, 21);
+  disc(x, 'E', 44, oy + 40, 10);
+  disc(x, 'e', 43, oy + 39, 7);
+  disc(x, 'r', 130, oy + 38, 15); ring(x, 'R', 130, oy + 38, 15, 1, 'R');
+  spr(x, I.sword, 122, oy + 30);
+  disc(x, 'n', 100, oy + 62, 12); ring(x, 'u', 100, oy + 62, 12, 1, 'u');
+  spr(x, I[item], 92, oy + 54);
+  text(x, 'TOOL', 92, oy + 78, C.e);
+}
+function drawLife() {
+  const x = document.getElementById('c-life').getContext('2d');
+  hud(x, 23, 25);
+  wood(x, 20);
+  controls(x, 196, 'boots');
+}
+function drawEnd() {
+  const x = document.getElementById('c-end').getContext('2d');
+  hud(x, 0, 25);
+  wood(x, 20);
+  x.fillStyle = 'rgba(20,24,40,0.62)'; x.fillRect(0, 20, 160, 176);
+  controls(x, 196, 'shovel');
+  x.fillStyle = 'rgba(20,24,40,0.55)'; x.fillRect(0, 196, 160, 92);
+  // the card
+  rect(x, 'k', 18, 46, 124, 128); rect(x, 'm', 20, 48, 120, 124); rect(x, 'w', 20, 48, 120, 2);
+  text(x, 'TIME!', 80 - tw('TIME!', 2) / 2, 56, C.o, 2, C.k);
+  text(x, 'LIFE 25 ENDS', 80 - tw('LIFE 25 ENDS') / 2, 72, C.E);
+  const rows = [['KEPT', 'SHOVEL', 'shovel', C.o], ['FIXED', 'MINE GATE', 'key', '#1f6f66'], ['SEEN', 'FERRY 0:35', 'note', C.n]];
+  rows.forEach(([k, v, ic, col], i) => {
+    const Y = 84 + i * 24;
+    rect(x, 'w', 26, Y, 108, 20);
+    spr(x, I[ic], 28, Y + 2);
+    text(x, k, 48, Y + 4, col);
+    text(x, v, 48, Y + 11, C.k);
+  });
+  text(x, 'BACK HOME...', 80 - tw('BACK HOME...') / 2, 160, C.E);
+}
+
+// § scene: key art
+function drawKey() {
+  const x = document.getElementById('c-key').getContext('2d');
+  const bands = ['#26346a', '#3a3f86', '#5e4a9a', '#9a5a8e', '#d9785e', '#f0a65a'];
+  for (let y = 0; y < 112; y++) {
+    const f = y / 112 * (bands.length - 1), i = Math.floor(f), t = f - i;
+    for (let X = 0; X < 256; X++) {
+      const pick = (t > 0.5 ? ((X + y) % 2 === 0 || t > 0.75) : ((X + y) % 2 === 0 && t > 0.25)) ? bands[Math.min(i + 1, bands.length - 1)] : bands[i];
+      x.fillStyle = pick; x.fillRect(X, y, 1, 1);
+    }
+  }
+  for (let i = 0; i < 30; i++) { const X = (hh(i, 1) * 256) | 0, Y = (hh(i, 2) * 40) | 0; rect(x, i % 4 ? '#c9d2ff' : C.w, X, Y, 1, 1); }
+  // far hills
+  for (let X = 0; X < 256; X++) { const h = 8 + Math.sin(X / 23) * 5 + Math.sin(X / 9 + 1) * 2; rect(x, '#3d5a7a', X, 104 - h, 1, h + 10); }
+  for (let X = 0; X < 256; X++) { const h = 6 + Math.sin(X / 31 + 2) * 4; rect(x, 'G', X, 112 - h, 1, h + 4); }
+  // ground
+  for (let cy = 7; cy < 9; cy++) for (let cx = 0; cx < 16; cx++) tile(x, (cx === 7 || cx === 8) ? 'p' : (hh(cx, cy, 4) > 0.8 ? 'f' : 'g'), cx, cy, 0, 0);
+  rect(x, 'G', 0, 112, 256, 1);
+  // houses
+  const house = (X, w, roof) => {
+    rect(x, 'k', X - 1, 76, w + 2, 37); rect(x, 'm', X, 84, w, 28);
+    for (let i = 0; i < 8; i++) rect(x, roof, X - 2 + i, 82 - i, w + 4 - i * 2, 1);
+    rect(x, 'k', X - 3, 83, w + 6, 1);
+    rect(x, 'k', X + 4, 90, 6, 6); rect(x, 'y', X + 5, 91, 4, 4);
+    rect(x, 'k', X + w - 10, 98, 7, 14); rect(x, 'b', X + w - 9, 99, 5, 13);
+  };
+  house(14, 34, C.r); house(56, 28, C.n); house(178, 30, C.o); house(214, 34, C.R);
+  // clock tower
+  const tx = 104, tw2 = 48;
+  rect(x, 'k', tx - 1, 22, tw2 + 2, 91);
+  for (let y = 23; y < 112; y++) rect(x, (y % 6 === 0) ? 'E' : 'e', tx, y, tw2, 1);
+  for (let y = 23; y < 112; y += 6) for (let X = tx + ((y / 6) % 2 ? 4 : 0); X < tx + tw2; X += 8) rect(x, 'E', X, y, 1, 6);
+  for (let i = 0; i < 14; i++) rect(x, i % 2 ? 'R' : 'r', tx - 4 + i, 22 - i, tw2 + 8 - i * 2, 1);
+  rect(x, 'k', tx - 5, 22, tw2 + 10, 1);
+  rect(x, 'y', 127, 4, 2, 4);
+  disc(x, 'k', 128, 42, 14); disc(x, 'w', 128, 42, 12);
+  for (let h = 0; h < 12; h++) { const a = h / 12 * Math.PI * 2; rect(x, 'k', Math.round(128 + Math.sin(a) * 10), Math.round(42 - Math.cos(a) * 10), 1, 1); }
+  line(x, 'k', 128, 42, 126, 35); line(x, 'k', 128, 42, 127, 32); rect(x, 'r', 128, 42, 1, 1);
+  // bell window, bell with no clapper
+  rect(x, 'k', 116, 62, 24, 22); rect(x, 'd', 118, 64, 20, 20);
+  for (let i = 0; i < 3; i++) rect(x, 'd', 118 + i, 63 - i, 20 - i * 2, 1);
+  spr(x, I.hour.slice(1, 11), 120, 66);
+  rect(x, 'k', 126, 94, 4, 1);
+  rect(x, 'k', 120, 96, 16, 17); rect(x, 'b', 122, 98, 12, 15); rect(x, 'o', 131, 105, 1, 2);
+  // magpie with the clapper
+  spr(x, S_MAGPIE, 182, 26, { scale: 2 });
+  // hero
+  spr(x, S_HERO, 112, 108, { scale: 2 });
+  // title
+  text(x, 'MINUTE HERO', 10, 10, C.y, 2, C.k);
+  text(x, 'ONE MINUTE AT A TIME', 10, 25, C.m, 1, C.k);
+}
+
+// § scene: map wall and notebook
+function drawWorldMap() {
+  const x = document.getElementById('c-map').getContext('2d');
+  rect(x, 'b', 0, 0, 256, 160);
+  const seeds = [[84, 82, '#d9c792'], [128, 78, '#4f9a55'], [84, 124, '#efd9a0'], [84, 36, '#8b8fa0'], [38, 76, '#a5d27a']];
+  const W = 172, H = 160, reg = new Int8Array(W * H).fill(-1);
+  for (let y = 4; y < H - 4; y++) for (let X = 4; X < W - 4; X++) {
+    const n = (hh(X >> 2, y >> 2, 3) - 0.5) * 0.16;
+    const d = ((X - 84) / 70) ** 2 + ((y - 80) / 66) ** 2;
+    const isle = ((X - 150) / 12) ** 2 + ((y - 138) / 9) ** 2;
+    let r = -1;
+    if (d + n < 1) {
+      let best = 1e9;
+      seeds.forEach(([sx, sy], i) => { const dd = (X - sx) ** 2 + (y - sy) ** 2 + hh(X >> 3, y >> 3, i) * 260; if (dd < best) { best = dd; r = i; } });
+    } else if (isle + n < 1) r = 2;
+    reg[y * W + X] = r;
+  }
+  for (let y = 4; y < H - 4; y++) for (let X = 4; X < W - 4; X++) {
+    const r = reg[y * W + X];
+    let col;
+    if (r < 0) col = (hh(X >> 1, y, 8) > 0.97) ? C.U : C.u;
+    else {
+      const nb = [reg[y * W + X + 1], reg[(y + 1) * W + X], reg[y * W + X - 1], reg[(y - 1) * W + X]];
+      col = nb.some(v => v < 0) ? C.k : nb.some(v => v !== r && v >= 0) && (X + y) % 2 ? '#5a4a3a' : seeds[r][2];
+    }
+    x.fillStyle = col; x.fillRect(X, y, 1, 1);
+  }
+  rect(x, 'k', 3, 3, W - 6, 1); rect(x, 'k', 3, H - 4, W - 6, 1); rect(x, 'k', 3, 3, 1, H - 6); rect(x, 'k', W - 4, 3, 1, H - 6);
+  // trails: oldest first
+  const trails = [
+    [[84, 82], [92, 96], [86, 110], [78, 122], [70, 130]],
+    [[84, 82], [100, 80], [116, 76], [130, 70], [140, 64]],
+    [[82, 120], [96, 126], [114, 130], [132, 134], [146, 136]],
+  ];
+  trails.forEach((pts, ti) => {
+    x.globalAlpha = [0.4, 0.65, 1][ti];
+    for (let i = 0; i < pts.length - 1; i++) {
+      const [a, b] = pts[i], [c, d] = pts[i + 1], n = Math.max(Math.abs(c - a), Math.abs(d - b));
+      for (let s = 0; s <= n; s += 1) if (s % 4 < 2) rect(x, 't', Math.round(a + (c - a) * s / n), Math.round(b + (d - b) * s / n), 2, 2);
+    }
+  });
+  x.globalAlpha = 1;
+  const sun = (X, Y, lit) => { disc(x, 'k', X, Y, 4); disc(x, lit ? 'y' : 'e', X, Y, 3); rect(x, 'k', X, Y - 2, 1, 3); };
+  sun(124, 88, true); sun(78, 116, true); sun(80, 30, false); sun(34, 66, false); sun(150, 137, false);
+  spr(x, I.hour, 76, 66);
+  const pin = (X, Y) => { rect(x, 'k', X, Y, 1, 5); disc(x, 'k', X, Y - 1, 2); disc(x, 'r', X, Y - 1, 1); };
+  pin(66, 132); pin(108, 50); pin(46, 92);
+  const lab = (s, X, Y) => text(x, s, X, Y, C.k, 1, 'rgba(255,255,255,0.55)');
+  lab('TOWN', 88, 72); lab('WOOD', 126, 98); lab('SHORE', 66, 140); lab('MINES', 72, 16); lab('MILL', 18, 82); lab('GULL', 148, 124);
+  // notebook
+  const NX = 174;
+  rect(x, 'k', NX - 1, 4, 80, 152); rect(x, '#efe6cc', NX, 5, 78, 150);
+  for (let y = 26; y < 152; y += 10) rect(x, '#d6c79f', NX + 2, y, 74, 1);
+  rect(x, 'r', NX + 9, 6, 1, 148);
+  text(x, 'THE MINUTE', NX + 13, 12, C.R);
+  const sched = [['0:10', 'PIE ON SILL'], ['0:20', 'BRIDGE DOWN'], ['0:30', 'SCARECROW'], ['0:35', 'FERRY GOES'], ['0:42', 'TIDE OUT'], ['?:??', '???'], ['0:55', 'LAMP ON'], ['?:??', '???']];
+  sched.forEach(([t, e], i) => {
+    const Y = 20 + i * 10;
+    text(x, t, NX + 12, Y, t[0] === '?' ? C.e : C.n);
+    text(x, e, NX + 32, Y, t[0] === '?' ? C.e : C.k);
+  });
+  text(x, 'DIG PAST', NX + 12, 112, C.R); text(x, '2ND DUNE?', NX + 12, 120, C.R);
+  spr(x, I.note, NX + 54, 128);
+}
+
+// § scene: the Still House
+function drawHub() {
+  const x = document.getElementById('c-hub').getContext('2d');
+  for (let y = 0; y < 48; y++) for (let X = 0; X < 256; X++) rect(x, (X % 12 < 6) ? '#4a5a85' : '#53659a', X, y, 1, 1);
+  for (let y = 4; y < 48; y += 10) for (let X = 3; X < 256; X += 12) rect(x, '#6c7fb6', X + ((y / 10) % 2 ? 6 : 0), y, 1, 1);
+  rect(x, 'B', 0, 44, 256, 4); rect(x, 'k', 0, 48, 256, 1);
+  for (let y = 49; y < 160; y++) rect(x, ((y - 49) % 8 === 7) ? 'b' : (((y - 49) >> 3) % 2 ? '#a5764b' : 'B'), 0, y, 256, 1);
+  for (let r = 0; r < 14; r++) for (let X = (r % 2 ? 0 : 24); X < 256; X += 48) rect(x, 'b', X, 49 + r * 8, 1, 7);
+  // bottom wall with the door
+  rect(x, 'k', 0, 150, 256, 10); rect(x, 'E', 0, 151, 256, 9);
+  rect(x, 'k', 108, 150, 40, 10); tile(x, 'g', 0, 0, 110, 151); tile(x, 'g', 0, 0, 126, 151); tile(x, 'p', 0, 0, 120, 151);
+  rect(x, 'r', 110, 140, 36, 10); rect(x, 'R', 112, 142, 32, 6);
+  // grandfather clock, stopped
+  rect(x, 'k', 17, 6, 30, 70); rect(x, 'b', 18, 7, 28, 68); rect(x, 'B', 20, 9, 24, 64);
+  disc(x, 'k', 32, 21, 10); disc(x, 'w', 32, 21, 8);
+  line(x, 'k', 32, 21, 30, 16); line(x, 'k', 32, 21, 31, 14); rect(x, 'r', 32, 21, 1, 1);
+  rect(x, 'k', 26, 36, 12, 32); rect(x, 'd', 27, 37, 10, 30); rect(x, 'e', 31, 37, 1, 20); disc(x, 'o', 31, 58, 3);
+  // map frame
+  rect(x, 'k', 62, 6, 60, 36); rect(x, 'b', 63, 7, 58, 34); rect(x, 'm', 66, 10, 52, 28);
+  disc(x, '#a5d27a', 82, 24, 9); disc(x, '#4f9a55', 98, 22, 8); disc(x, '#d9c792', 90, 26, 6); disc(x, '#efd9a0', 90, 33, 4);
+  line(x, 't', 88, 26, 100, 20); line(x, 't', 90, 26, 88, 34); disc(x, 'r', 104, 16, 1);
+  // shelf of Hours
+  rect(x, 'B', 136, 36, 104, 3); rect(x, 'k', 136, 39, 104, 1);
+  for (let i = 0; i < 12; i++) {
+    const X = 138 + i * 8.5 | 0;
+    if (i < 3) spr(x, I.hour.slice(1, 12), X - 4, 25);
+    else { disc(x, 'd', X + 4, 31, 3); rect(x, 'd', X + 1, 34, 7, 2); }
+  }
+  // hat rack
+  rect(x, 'k', 233, 56, 4, 64); rect(x, 'b', 234, 57, 2, 62); rect(x, 'k', 226, 118, 18, 3);
+  spr(x, I.hat, 226, 50); spr(x, I.hat.map(r => r.replace(/r/g, 'u').replace(/R/g, 'n')), 220, 64); spr(x, I.hat.map(r => r.replace(/r/g, 'y').replace(/R/g, 'o').replace(/w/g, 'r')), 230, 78);
+  // table and notebook
+  rect(x, 'k', 31, 95, 34, 18); rect(x, 'b', 32, 96, 32, 16); rect(x, 'B', 32, 96, 32, 4);
+  spr(x, I.note, 34, 84); spr(x, I.lantern, 48, 82);
+  // rug, cat, hero
+  for (let j = -14; j <= 14; j++) for (let i = -34; i <= 34; i++) {
+    const d = (i / 34) ** 2 + (j / 14) ** 2;
+    if (d <= 1) rect(x, d > 0.8 ? 'R' : (d > 0.55 ? 'o' : 'r'), 128 + i, 100 + j, 1, 1);
+  }
+  spr(x, S_CAT, 120, 86);
+  text(x, 'Z', 134, 84, C.w); text(x, 'Z', 139, 79, C.w);
+  spr(x, S_HERO, 120, 120);
+  // start menu
+  rect(x, 'k', 170, 98, 82, 50); rect(x, 'd', 171, 99, 80, 48);
+  text(x, 'START AT', 176, 103, C.o);
+  [['SHORE', 1], ['HOME', 1], ['WOOD', 1], ['???', 0]].forEach(([s, ok], i) => {
+    const Y = 113 + i * 8;
+    if (i === 0) { text(x, '>', 176, Y, C.y); }
+    disc(x, ok ? 'y' : 'E', 184, Y + 2, 2);
+    text(x, s, 190, Y, i === 0 ? C.y : (ok ? C.w : C.E));
+  });
+}
+
+// § scene: Daily Minute card
+function drawDaily() {
+  const x = document.getElementById('c-daily').getContext('2d');
+  rect(x, 'm', 0, 0, 160, 200);
+  rect(x, 'n', 0, 0, 160, 30);
+  text(x, 'DAILY MINUTE', 80 - tw('DAILY MINUTE', 2) / 2, 6, C.y, 2, C.k);
+  text(x, '17 OCT 2026', 80 - tw('17 OCT 2026') / 2, 21, C.U);
+  const ox = 16, oy = 38, cs = 8;
+  const MAP = ['TTTTTTTTTTTTTTT', 'TggpppggwwwgggT', 'TgbpgpggwwwgrgT', 'TggpgpppppgggbT', 'TrggggbgwpgggpT', 'TggwwwggwpppppT', 'TggwwwgggggbgpT', 'TbgggpppppgggpT', 'TggrgpgTggggppT', 'TgggggggggrgggT', 'TTTTTTTTTTTTTTT'];
+  const shade = { T: '#3b7a47', g: '#5aa457', p: '#d7b07a', w: '#3a74c0', b: '#7cc069', r: '#9aa1b0' };
+  MAP.forEach((row, cy) => [...row].forEach((t, cx) => {
+    rect(x, shade[t], ox + cx * cs, oy + cy * cs, cs, cs);
+    if (t === 'T') { disc(x, '#2c5e38', ox + cx * cs + 4, oy + cy * cs + 4, 3); }
+    if (t === 'w' && (cx + cy) % 2) rect(x, 'U', ox + cx * cs + 2, oy + cy * cs + 3, 3, 1);
+  }));
+  rect(x, 'k', ox - 1, oy - 1, 15 * cs + 2, 1); rect(x, 'k', ox - 1, oy + 11 * cs, 15 * cs + 2, 1);
+  rect(x, 'k', ox - 1, oy - 1, 1, 11 * cs + 2); rect(x, 'k', ox + 15 * cs, oy - 1, 1, 11 * cs + 2);
+  const coins = [[3, 2], [5, 1], [6, 3], [9, 3], [11, 1], [12, 3], [13, 5], [11, 6], [13, 8], [9, 7], [6, 7], [4, 9], [2, 6], [1, 3], [10, 9], [12, 2], [7, 5], [5, 5], [2, 9], [8, 1]];
+  const got = new Set([0, 1, 2, 3, 6, 7, 8, 9, 10, 11, 16, 17, 4, 15]);
+  coins.forEach(([cx, cy], i) => { const X = ox + cx * cs + 4, Y = oy + cy * cs + 4; if (got.has(i)) { disc(x, 'k', X, Y, 2); disc(x, 'y', X, Y, 1); } else { rect(x, 'k', X - 1, Y - 1, 3, 3); rect(x, 'e', X, Y, 1, 1); } });
+  const route = [[3, 9], [3, 7], [3, 3], [3, 2], [5, 1], [5, 3], [6, 3], [9, 3], [12, 3], [12, 2], [11, 1], [9, 4], [9, 5], [7, 5], [5, 5], [5, 7], [6, 7], [9, 7], [11, 6], [13, 5], [13, 8]];
+  for (let i = 0; i < route.length - 1; i++) {
+    const [a, b] = route[i], [c, d] = route[i + 1];
+    line(x, 't', ox + a * cs + 4, oy + b * cs + 4, ox + c * cs + 4, oy + d * cs + 4);
+    line(x, 't', ox + a * cs + 5, oy + b * cs + 4, ox + c * cs + 5, oy + d * cs + 4);
+  }
+  spr(x, S_HERO.slice(0, 16), ox + 13 * cs - 4, oy + 8 * cs - 8, {});
+  text(x, '14/20', 18, 140, C.n, 3);
+  text(x, 'COINS', 80, 141, C.E); text(x, 'ONE LIFE', 80, 149, C.E); text(x, '60 S', 80, 157, C.E);
+  rect(x, 'A', 16, 172, 128, 1);
+  text(x, 'MINUTE HERO', 16, 180, C.n);
+  text(x, 'BEAT MY ROUTE', 144 - tw('BEAT MY ROUTE'), 180, C.R);
+}
+
+// § tool cards and the session timeline (HTML)
+const TOOLS = [
+  ['sword', 'Twig Sword', 'Tickhollow market · life 4', 'Cuts hedges and beats beetles. A hedge line in Pocketwood, once cut, stays cut and becomes the straight road east.'],
+  ['boots', 'Clockwork Boots', 'Pocketwood shrine', 'Hold the tool button to wind, let go to dash. Breaks cracked walls, jumps short gaps, and is the fastest way to travel.'],
+  ['shovel', 'Shovel', 'Saltglass dunes', 'Digs the X-marked spots for keys, hats and Hours. Dug tunnels stay dug, so it builds its own shortcuts.'],
+  ['lantern', 'Lantern', 'Rattle Mines entrance', 'Lights dark rooms. Lantern posts you light stay lit, so later lives can run the mines without it.'],
+  ['hook', 'Hook-Line', 'Windmill Rise', 'Pulls you across gaps and water to wooden posts, and pulls small things (a pie, a key) to you.'],
+  ['fins', 'Swim Fins', 'Saltglass tide pools', 'Swim deep water and dive under rocks. The sea route to Gull Rock no longer needs the 0:35 ferry.'],
+  ['stillstone', 'Stillstone', 'Gull Rock', 'Once per life, stops the clock and the whole world for five seconds while you keep moving. Holds a bridge down or a ferry at the dock.'],
+  ['echo', 'Echo Bell', 'The Roost stairs', 'Ring it and your next life starts beside an echo that replays your last one. It can stand on a switch while you go through the door.'],
+];
+const MINOR = [['key', 'Small keys, one set per dungeon'], ['heart', 'Heart pieces: four make a heart (you start with three)'], ['hat', 'Hats: fourteen, just for fun, kept on the rack at home'], ['note', 'Notes from people, and schedule lines']];
+const LIVES = [
+  [null, 0, 'Still House. Last session\'s trail ends in the dunes. A pinned note says "dig past the 2nd dune?"', 'Home'],
+  [60, 41, 'Out of the door, south to the dunes, dig: a key. Time runs out on the way back. The key is kept.', 'Life 22'],
+  [52, 46, 'The key opens the lighthouse. Inside, a sundial: light it. Lives can now start at the shore.', 'Life 23'],
+  [60, 37, 'Start at the shore. Race for the ferry and miss it by two seconds. The notebook adds "ferry goes 0:35".', 'Life 24'],
+  [60, 31, 'Through the hedge cut weeks ago: on the ferry at 0:31. Gull Rock at 0:50, ten seconds to look: a cave, a locked gate.', 'Life 25'],
+  [57, 56, 'Straight to the cave. A chest with a heart piece, opened at 0:56.', 'Life 26'],
+  [44, 40, 'The bus stop is close. One silly errand: the hat on the windmill roof.', 'Life 27'],
+  [null, 0, 'Hang the hat on the rack and close the game. Nothing to finish, nothing lost.', 'Home'],
+];
+function icon(name, size = 16) {
+  const c = document.createElement('canvas'); c.width = 16; c.height = 16; c.className = 'px';
+  spr(c.getContext('2d'), I[name], 0, 0); c.setAttribute('aria-hidden', 'true');
+  return c;
+}
+function buildHtml() {
+  const items = document.getElementById('items');
+  TOOLS.forEach(([ic, name, where, what]) => {
+    const d = document.createElement('div'); d.className = 'item';
+    d.append(icon(ic));
+    const h = document.createElement('h3'); h.textContent = name;
+    const w = document.createElement('span'); w.className = 'where'; w.textContent = where;
+    const p = document.createElement('p'); p.textContent = what;
+    d.append(h, w, p); items.append(d);
+  });
+  const minor = document.getElementById('minor');
+  MINOR.forEach(([ic, s]) => { const li = document.createElement('li'); li.append(icon(ic)); li.append(document.createTextNode(s)); minor.append(li); });
+  const lives = document.getElementById('lives');
+  LIVES.forEach(([used, ev, txt, n]) => {
+    const li = document.createElement('li'); li.className = 'life' + (used === null ? ' home' : '');
+    const nn = document.createElement('span'); nn.className = 'n'; nn.textContent = n;
+    const body = document.createElement('div');
+    if (used !== null) {
+      const bar = document.createElement('div'); bar.className = 'bar';
+      bar.setAttribute('aria-label', `lasted ${used} seconds, key moment at 0:${String(ev).padStart(2, '0')}`);
+      const u = document.createElement('span'); u.className = 'used'; u.style.width = (used / 60 * 100) + '%';
+      const e = document.createElement('span'); e.className = 'ev'; e.style.left = (ev / 60 * 100) + '%';
+      bar.append(u, e); body.append(bar);
+    }
+    const p = document.createElement('p'); p.textContent = txt; body.append(p);
+    li.append(nn, body); lives.append(li);
+  });
+}
+
+buildHtml();
+drawKey(); drawLife(); drawEnd(); drawWorldMap(); drawHub(); drawDaily();
+</script>
