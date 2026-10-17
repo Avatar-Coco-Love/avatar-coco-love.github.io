@@ -192,6 +192,8 @@ Mini golf with a new generated 9-hole course every day.
 - **Why it could bring players:** a strokes card shares like a Wordle result; families play together.
 - **Hard part:** no impossible or trivial holes; a bot putts each hole thousands of times.
 
+Full write-up: [Pocket Links concept page](https://claude.ai/artifact/BsSeidycTkCCtfzCvHRVM9) (source: `_ideas/pocket-links.html`): course pieces, the week of grounds, modes, putters, ghost links, how holes are made, a build plan and mockups.
+
 ### 16. Rootguard
 
 Tower defense underground: grow roots, and pests tunnel through the gaps.
