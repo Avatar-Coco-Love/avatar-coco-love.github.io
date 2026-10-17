@@ -479,6 +479,8 @@ A curse gives you 60 seconds per life (as in the indie game Minit). Each life yo
 - **Why it works:** perfect for short phone sessions, and every minute ends with progress.
 - **Hard part:** the timer can feel stressful; it needs a calm hub with no clock.
 
+Status: parked (17 Oct 2026), the concept is kept for later.
+
 Concept in depth: [Minute Hero concept page](https://claude.ai/artifact/JxBgUx9yHYF38ty1jKLNV5) (source: `_ideas/minute-hero.html`): the world, the 60-second rule, the minute's schedule, 8 tools, a sample session, and mockups drawn in code.
 
 ### E. Bramble & Beast: switch between two heroes
