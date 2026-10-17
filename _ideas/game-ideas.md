@@ -150,7 +150,7 @@ Look after a rock pool that keeps living while you're away.
 - **Why it could bring players:** daily return visits, classroom ecology.
 - **Hard part:** doesn't fit "10 minutes in one sitting"; themed near the arcade's Island Census, though it plays differently.
 
-## Ideas 11–22
+## Ideas 11–23
 
 ### 11. Loopkeeper
 
