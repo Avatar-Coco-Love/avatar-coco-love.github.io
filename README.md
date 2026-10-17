@@ -4,6 +4,8 @@ Home page with links to all my projects: https://avatar-coco-love.github.io/
 
 - `index.html`: the page (one card per project; no build step).
 - `share.png`: link-preview image (1200×630) for when the page is shared.
+- `gloamdeep.png`: card image for Gloamdeep (a frame from its style study),
+  since that game has no share image of its own yet.
 - `qr.png`: QR code for the page's address. It never changes, so adding a
   project is just a new card in `index.html`.
 
