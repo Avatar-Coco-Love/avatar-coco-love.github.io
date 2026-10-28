@@ -58,6 +58,24 @@
     background: #0b0b10; color: #ffa64f; border: 1px solid #ffa64f;
     font-size: .75rem; font-weight: 700; letter-spacing: .05em; text-transform: uppercase;
   }
+  /* Gloamdeep's card: dark and warm in both themes, the picture fading into it,
+     "Under construction" low on the picture like a caption. */
+  .card.lit { background: #13100d; border-color: #3b2c1c; box-shadow: 0 8px 22px -14px rgba(255, 140, 40, .22); }
+  .card.lit .art { position: relative; }
+  .card.lit .art::after {
+    content: ""; position: absolute; inset: 0;
+    background: linear-gradient(to bottom, transparent 60%, #13100d 100%),
+                radial-gradient(ellipse at 50% 70%, transparent 45%, rgba(0, 0, 0, .35) 100%);
+  }
+  .card.lit h2 { color: #f1e5d1; }
+  .card.lit p { color: #b7a68d; }
+  .card.lit .go { color: #ffa64f; }
+  .plaque {
+    position: absolute; z-index: 1; left: 16px; bottom: 10px; display: inline-flex; align-items: center; gap: 8px;
+    color: #ffa64f; font-size: .72rem; font-weight: 700; letter-spacing: .14em; text-transform: uppercase;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, .8);
+  }
+  .plaque::before, .plaque::after { content: ""; width: 18px; height: 1px; background: currentColor; opacity: .6; }
   footer { margin-top: 28px; text-align: center; font-size: .85rem; color: var(--muted); }
   footer p { margin: 0 0 10px; }
   .call {
@@ -125,9 +143,11 @@
         <span class="go" aria-hidden="true">Details →</span>
       </div>
     </li>
-    <li class="card">
-      <img src="gloamdeep.png?v=2" alt="">
-      <span class="wip">Under construction</span>
+    <li class="card lit">
+      <div class="art">
+        <img src="gloamdeep.png?v=3" alt="">
+        <span class="plaque">Under construction</span>
+      </div>
       <div class="body">
         <h2><a href="https://avatar-coco-love.github.io/gloamdeep/">Gloamdeep</a></h2>
         <p>A lantern-lit, turn-based dungeon survival game for phones and browsers: carry a lantern down through dark places. Early version, still in progress.</p>
