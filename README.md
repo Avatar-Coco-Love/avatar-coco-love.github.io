@@ -10,9 +10,13 @@ Home page with links to all my projects: https://avatar-coco-love.github.io/
 - `qr.png`: QR code for the page's address. It never changes, so adding a
   project is just a new card in `index.html`.
 
-Projects: [Emergent Arcade](https://avatar-coco-love.github.io/emergent-arcade/),
-[Animal Mail Route](https://avatar-coco-love.github.io/animal-mail-route/),
-[Foldwork](https://avatar-coco-love.github.io/foldwork/).
+Card order (owner's choice): [Gloamdeep](https://avatar-coco-love.github.io/gloamdeep/),
+[Emergent Arcade](https://avatar-coco-love.github.io/emergent-arcade/),
+[Foldwork](https://avatar-coco-love.github.io/foldwork/),
+[Lumen Core](https://avatar-coco-love.github.io/ClaudeGame/) (card still to come:
+the Claude that builds Lumen Core, in `Avatar-Coco-Love/ClaudeGame`, designs and
+writes it), then [Animal Mail Route](https://avatar-coco-love.github.io/animal-mail-route/).
+Nexus Drift is off the page for now.
 
 `email-list/Code.gs`: the Apps Script behind the "Get updates" form. It lives
 in the Google Sheet "Email list (projects page)" (Extensions > Apps Script) and
