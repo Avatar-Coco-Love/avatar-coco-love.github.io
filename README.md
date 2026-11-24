@@ -13,9 +13,9 @@ Home page with links to all my projects: https://avatar-coco-love.github.io/
 Card order (owner's choice): [Gloamdeep](https://avatar-coco-love.github.io/gloamdeep/),
 [Emergent Arcade](https://avatar-coco-love.github.io/emergent-arcade/),
 [Foldwork](https://avatar-coco-love.github.io/foldwork/),
-[Lumen Core](https://avatar-coco-love.github.io/ClaudeGame/) (card still to come:
-the Claude that builds Lumen Core, in `Avatar-Coco-Love/ClaudeGame`, designs and
-writes it), then [Animal Mail Route](https://avatar-coco-love.github.io/animal-mail-route/).
+[Lumen Core](https://avatar-coco-love.github.io/ClaudeGame/) (its card image is
+that game's own share image, served from its site; the Claude that builds it, in
+`Avatar-Coco-Love/ClaudeGame`, owns the card's look and words), then [Animal Mail Route](https://avatar-coco-love.github.io/animal-mail-route/).
 Nexus Drift is off the page for now.
 
 `email-list/Code.gs`: the Apps Script behind the "Get updates" form. It lives
